@@ -5,20 +5,29 @@ import boto3
 from openai import OpenAI
 import torch
 from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
+import soundfile as sf
+import json
+brt = boto3.client(
+    service_name='bedrock-runtime', 
+    aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
+    region_name=os.getenv('AWS_REGION')
+    )
 #Imports END
 
 ############################################ Connections & Config START
 S3_BUCKET= os.getenv('S3_BUCKET')
+print('S3_BUCKET', S3_BUCKET)
 s3 = boto3.client(
     's3',
     aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
     aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
     region_name=os.getenv('AWS_REGION')
 )
-OPENAI_API_KEY=os.getenv('OPENAI_API_KEY')
-client = OpenAI(
-    api_key=OPENAI_API_KEY,
-)
+# OPENAI_API_KEY=os.getenv('OPENAI_API_KEY')
+# client = OpenAI(
+#     api_key=OPENAI_API_KEY,
+# )
 
 ###################### Model Setup ##########################
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
@@ -565,13 +574,12 @@ def analysisProcess(local_file_paths):
     print('*************** Analysis process Started ***************')
     finalAnalysisResponse=[]
     for file_path in local_file_paths:
-        # transcription = process_with_whisper_api(file_path)
-        segments = dummytranscription['chunks']
+        transcription = process_with_whisper_hugging_face_model(file_path)
+        segments = transcription['chunks']
         updatedSegments=[]
-        # print('segments', segments)
         for index, segment in enumerate(segments):
             updatedSegments.append({'segment_id':index, 'text':segment['text'], 'timestamp':segment['timestamp']})
-        analysisResponse = prompting_with_openai(updatedSegments)
+        analysisResponse = prompting_with_bedrock(updatedSegments)
         finalAnalysisResponse.append(analysisResponse)
         print('analysisResponse', analysisResponse)
     print('*************** Analysis process Ended ***************')
@@ -596,36 +604,53 @@ def download_from_s3(file_name):
     s3.download_file(S3_BUCKET, file_name, local_path)
     return local_path
 
-def process_with_whisper_api(file_path):
-    print('*************** Processing local files with Whisper Transcription API ***************', file_path)
-    audio_file= open(file_path, "rb")
-    transcription = client.audio.transcriptions.create(
-    model="whisper-1", 
-    file=audio_file
-    )
-    print('Completed Transcription::', transcription.text)
-    return transcription
+# def process_with_whisper_api(file_path):
+#     print('*************** Processing local files with Whisper Transcription API ***************', file_path)
+#     audio_file= open(file_path, "rb")
+#     transcription = client.audio.transcriptions.create(
+#     model="whisper-1", 
+#     file=audio_file
+#     )
+#     print('Completed Transcription::', transcription.text)
+#     return transcription
 
 def process_with_whisper_hugging_face_model(file_path):
+    print('*************** Started process_with_whisper_hugging_face_model')
     audio_file= open(file_path, "rb")
-    result = pipe(audio_file)
+    audio_sf_file, sample_rate = sf.read(file_path)
+    result = pipe(audio_sf_file)
+    print('RESPONSE:: process_with_whisper_hugging_face_model')
+    print('result', result)
+    return result
 
-def prompting_with_openai(transcription):
+def prompting_with_bedrock(transcription):
     prompt = get_prompt(transcription)
-    print('************** Prompting with OPEN AI Turbo **************')
-    print(prompt)
-    response = client.chat.completions.create(
-        messages=[
-            {
-                "role": "user",
-                "content": prompt,
-            }
-        ],
-        temperature=0,
-        model="gpt-3.5-turbo"
-    )
-    return response.choices[0].message.content
+    body = json.dumps({
+        "prompt": prompt,
+        "temperature": 0.1,
+    })
+    modelId = 'anthropic.claude-v2'
+    accept = 'application/json'
+    contentType = 'application/json'
+    response = brt.invoke_model(body=body, modelId=modelId, accept=accept, contentType=contentType)
+    response_body = json.loads(response.get('body').read())
+    return response_body
 
+# def prompting_with_openai(transcription):
+#     prompt = get_prompt(transcription)
+#     print('************** Prompting with OPEN AI Turbo **************')
+#     print(prompt)
+#     response = client.chat.completions.create(
+#         messages=[
+#             {
+#                 "role": "user",
+#                 "content": prompt,
+#             }
+#         ],
+#         temperature=0,
+#         model="gpt-3.5-turbo"
+#     )
+#     return response.choices[0].message.content
 
 def get_prompt(data):
     prompt =f'''
