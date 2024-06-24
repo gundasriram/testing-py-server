@@ -187,7 +187,8 @@ def inserToDB(dbRecord):
 def get_prompt(data):
     prompt =f'''
        I have a call conversation transcript below is the details of task that needs to be done.
-        Below each point describes an key's value in the JSON output
+        Below each point describes an key's value in the JSON output. 
+        Note:Do not pass the instructions in response only return the JSON object
             1. Identifying Role and Sentiment:
                 How to identify roles 
                     IVR Identification: Segments that involve automatic responses, instructions for pressing buttons, and general introductory messages are typically IVR.
