@@ -86,8 +86,8 @@ def analysisProcess(local_file_paths):
         print('update segments', updatedSegments)
         print('========================')
         print('analysisResponse completions:::::::', analysisResponse['completion'])
-        completion =  json.dumps(analysisResponse['completion'])
-        # updatedCompletion = analysisResponse['completion'].replace('Here is the JSON output as per the instructions:', '').replace('Here is the JSON output with the requested information:', '').replace('```json', '').replace('```', '')
+        completion =  analysisResponse['completion']
+        updatedCompletion = analysisResponse['completion'].replace('Here is the JSON output as per the instructions:', '').replace('Here is the JSON output with the requested information:', '').replace('```json', '').replace('```', '')
         # print('updatedCompletion json dumps', json.dumps(updatedCompletion))
         # updatedCompletions1= updatedCompletion.replace('\n', '')
         # updatedCompletions2= updatedCompletions1.replace('\'', '')
@@ -96,7 +96,7 @@ def analysisProcess(local_file_paths):
         dbRecord = {
          'transcription_whisper': json.dumps(transcription),
           'updated_segments': json.dumps(updatedSegments),
-          'analysis_response': completion
+          'analysis_response': json.dumps(updatedCompletion)
         }
         inserToDB(dbRecord)
         finalAnalysisResponse.append(json.dumps(dbRecord))
@@ -188,7 +188,7 @@ def get_prompt(data):
     prompt =f'''
        I have a call conversation transcript below is the details of task that needs to be done.
         Below each point describes an key's value in the JSON output. 
-        Note:Do not pass the instructions in response only return the JSON object
+        Note: DO NOT PASS THE INSTRUCTIONS IN RESPONSE ONLY RETURN THE JSON OBJECT
             1. Identifying Role and Sentiment:
                 How to identify roles 
                     IVR Identification: Segments that involve automatic responses, instructions for pressing buttons, and general introductory messages are typically IVR.
