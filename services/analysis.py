@@ -90,12 +90,13 @@ def analysisProcess(local_file_paths):
         updatedCompletion = analysisResponse['completion'].replace('Here is the JSON output as per the instructions:', '').replace('Here is the JSON output with the requested information:', '').replace('```json', '').replace('```', '')
         print('updatedCompletion json dumps', json.dumps(updatedCompletion))
         updatedCompletions1= updatedCompletion.replace('\'', '').replace('\n', '')
+        updatedCompletions2=updatedCompletions1.replace('\'', '')
         print('=======================')
-        print('pdatedCompletions1 =====', updatedCompletions1)
+        print('pdatedCompletions1 =====', updatedCompletions2)
         dbRecord = {
          'transcription_whisper': json.dumps(transcription),
           'updated_segments': json.dumps(updatedSegments),
-          'analysis_response': json.dumps(updatedCompletions1)
+          'analysis_response': json.dumps(updatedCompletions2)
         }
         inserToDB(dbRecord)
         finalAnalysisResponse.append(json.dumps(dbRecord))
