@@ -86,17 +86,17 @@ def analysisProcess(local_file_paths):
         print('update segments', updatedSegments)
         print('========================')
         print('analysisResponse completions:::::::', analysisResponse['completion'])
-        completion = analysisResponse['completion']
-        updatedCompletion = analysisResponse['completion'].replace('Here is the JSON output as per the instructions:', '').replace('Here is the JSON output with the requested information:', '').replace('```json', '').replace('```', '')
-        print('updatedCompletion json dumps', json.dumps(updatedCompletion))
-        updatedCompletions1= updatedCompletion.replace('\n', '')
-        updatedCompletions2=updatedCompletions1.replace('\'', '')
-        print('=======================')
-        print('pdatedCompletions1 =====', updatedCompletions2)
+        completion =  json.dumps(analysisResponse['completion'])
+        # updatedCompletion = analysisResponse['completion'].replace('Here is the JSON output as per the instructions:', '').replace('Here is the JSON output with the requested information:', '').replace('```json', '').replace('```', '')
+        # print('updatedCompletion json dumps', json.dumps(updatedCompletion))
+        # updatedCompletions1= updatedCompletion.replace('\n', '')
+        # updatedCompletions2= updatedCompletions1.replace('\'', '')
+        # print('=======================')
+        # print('pdatedCompletions1 =====', updatedCompletions2)
         dbRecord = {
          'transcription_whisper': json.dumps(transcription),
           'updated_segments': json.dumps(updatedSegments),
-          'analysis_response': json.dumps(updatedCompletions2)
+          'analysis_response': json.dumps(completion)
         }
         inserToDB(dbRecord)
         finalAnalysisResponse.append(json.dumps(dbRecord))
