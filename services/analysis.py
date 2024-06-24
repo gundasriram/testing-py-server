@@ -96,7 +96,7 @@ def analysisProcess(local_file_paths):
         dbRecord = {
          'transcription_whisper': json.dumps(transcription),
           'updated_segments': json.dumps(updatedSegments),
-          'analysis_response': json.dumps(completion)
+          'analysis_response': completion
         }
         inserToDB(dbRecord)
         finalAnalysisResponse.append(json.dumps(dbRecord))
