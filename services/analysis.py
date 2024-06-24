@@ -89,7 +89,7 @@ def analysisProcess(local_file_paths):
         completion = analysisResponse['completion']
         updatedCompletion = analysisResponse['completion'].replace('Here is the JSON output as per the instructions:', '').replace('Here is the JSON output with the requested information:', '').replace('```json', '').replace('```', '')
         print('updatedCompletion json dumps', json.dumps(updatedCompletion))
-        updatedCompletions1= updatedCompletion.replace('\'', '').replace('\n', '')
+        updatedCompletions1= updatedCompletion.replace('\n', '')
         updatedCompletions2=updatedCompletions1.replace('\'', '')
         print('=======================')
         print('pdatedCompletions1 =====', updatedCompletions2)
