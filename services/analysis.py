@@ -148,9 +148,9 @@ def process_with_whisper_hugging_face_model(file_path):
 
 def prompting_with_bedrock(transcription):
   try:
-    print('Prompt:::', prompt)
-    claude_prompt = f"\n\nHuman:{prompt}\n\nAssistant:"
     prompt = get_prompt(transcription)
+    claude_prompt = f"\n\nHuman:{prompt}\n\nAssistant:"
+    print('Prompt:::', prompt)
     body = json.dumps({
         "prompt": claude_prompt,
         "temperature": 0.1,
