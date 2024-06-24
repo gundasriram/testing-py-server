@@ -173,7 +173,7 @@ def inserToDB(dbRecord):
     item = dbRecord
     item['type'] = 'CALL'
     item['call_id'] = str(uuid.uuid4())
-    item['timestamp] = datetime.datetime.now()
+    item['timestamp'] = datetime.datetime.now()
     print('item', item)
     response = analysisTable.put_item(Item=item)
     print('response inserting to DB::: ',response)
