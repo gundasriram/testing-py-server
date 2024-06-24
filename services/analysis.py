@@ -25,7 +25,7 @@ dynamodb = boto3.resource(
     'dynamodb',
     region_name="ap-southeast-1"
   )
-TABLE_CALL_ANALYSIS='call_analysis_table'
+TABLE_CALL_ANALYSIS='call-analysis-table'
 ############################################ Connections & Config END
 
 ###################### Model Setup ##########################
@@ -63,6 +63,7 @@ def callAnalysis(body):
     local_file_paths= getFilesToLocal(body)
     # process_with_whisper_api(local_file_paths)
     finalresponse = analysisProcess(local_file_paths)
+    print('')
     return finalresponse
   except ClientError as e:
     print('Error in callAnalysis :::', e)
@@ -79,13 +80,25 @@ def analysisProcess(local_file_paths):
         for index, segment in enumerate(segments):
             updatedSegments.append({'segment_id':index, 'text':segment['text'], 'timestamp':segment['timestamp']})
         analysisResponse = prompting_with_bedrock(updatedSegments)
+        print('========================')
+        print('transcriptions from whisper ::::::', json.dumps(transcription))
+        print('========================')
+        print('update segments', updatedSegments)
+        print('========================')
+        print('analysisResponse completions:::::::', analysisResponse['completion'])
+        completion = analysisResponse['completion']
+        updatedCompletion = analysisResponse['completion'].replace('Here is the JSON output as per the instructions:', '').replace('Here is the JSON output with the requested information:', '').replace('```json', '').replace('```', '')
+        print('updatedCompletion json dumps', json.dumps(updatedCompletion))
+        updatedCompletions1= updatedCompletion.replace('\'', '').replace('\n', '')
+        print('=======================')
+        print('pdatedCompletions1 =====', updatedCompletions1)
         dbRecord = {
-          'transcription_whisper': transcription,
-          'updated_segments': updatedSegments,
-          'analysis_response': analysisResponse
+         'transcription_whisper': json.dumps(transcription),
+          'updated_segments': json.dumps(updatedSegments),
+          'analysis_response': json.dumps(updatedCompletions1)
         }
         inserToDB(dbRecord)
-        finalAnalysisResponse.append(analysisResponse)
+        finalAnalysisResponse.append(json.dumps(dbRecord))
         print('analysisResponse', analysisResponse)
     print('*************** Analysis process Ended ***************')
     return finalAnalysisResponse
@@ -135,16 +148,20 @@ def process_with_whisper_hugging_face_model(file_path):
 
 def prompting_with_bedrock(transcription):
   try:
+    print('Prompt:::', prompt)
+    claude_prompt = f"\n\nHuman:{prompt}\n\nAssistant:"
     prompt = get_prompt(transcription)
     body = json.dumps({
-        "prompt": prompt,
+        "prompt": claude_prompt,
         "temperature": 0.1,
+        "max_tokens_to_sample": 4096
     })
     modelId = 'anthropic.claude-v2'
     accept = 'application/json'
     contentType = 'application/json'
     response = brt.invoke_model(body=body, modelId=modelId, accept=accept, contentType=contentType)
     response_body = json.loads(response.get('body').read())
+    print('response from AWS Bedrock', response_body)
     return response_body
   except ClientError as e:
     print('Error in prompting_with_bedrock :::', e)
@@ -155,9 +172,10 @@ def inserToDB(dbRecord):
     analysisTable = dynamodb.Table(TABLE_CALL_ANALYSIS)
     item = dbRecord
     item['type'] = 'CALL'
-    item['call_id'] = myuuid = uuid.uuid4()
+    item['call_id'] = str(uuid.uuid4())
     print('item', item)
     response = analysisTable.put_item(Item=item)
+    print('response inserting to DB::: ',response)
   except ClientError as e:
     print('Error inserting analysis to DB:::', e)
     raise Exception(f"Insert failed: {e}")
