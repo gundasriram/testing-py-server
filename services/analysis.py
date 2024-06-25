@@ -90,6 +90,10 @@ def analysisProcess(local_file_paths):
         updatedCompletion = json.group(1).strip()
         print('updatedCompletion', updatedCompletion)
         print('typ eof updatedCompletion ', type(updatedCompletion))
+        escape_pattern = r'\\[abfnrtv\\]'
+        updatedCompletionNoEscape = re.sub(escape_pattern, '', updatedCompletion)
+        print('updatedCompletionNoEscape :::::::' , updatedCompletionNoEscape)
+        print('type of updatedCompletionNoEscape:::', type(updatedCompletionNoEscape))
         # updatedCompletion = analysisResponse['completion'].replace('Here is the JSON output as per the instructions:', '').replace('Here is the JSON output with the requested information:', '').replace('```json', '').replace('```', '')
         # print('updatedCompletion json dumps', json.dumps(updatedCompletion))
         # updatedCompletions1= updatedCompletion.replace('\n', '')
@@ -99,7 +103,7 @@ def analysisProcess(local_file_paths):
         dbRecord = {
           'transcription_whisper': json.dumps(transcription),
           'updated_segments': json.dumps(updatedSegments),
-          'analysis_response': updatedCompletion
+          'analysis_response': updatedCompletionNoEscape
         }
         print('DB RECORD CREATED :::::::', dbRecord)
         inserToDB(dbRecord)
