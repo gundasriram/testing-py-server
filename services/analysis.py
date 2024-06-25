@@ -81,14 +81,11 @@ def analysisProcess(local_file_paths):
         for index, segment in enumerate(segments):
             updatedSegments.append({'segment_id':index, 'text':segment['text'], 'timestamp':segment['timestamp']})
         analysisResponse = prompting_with_bedrock(updatedSegments)
-        print('========================')
-        print('transcriptions from whisper ::::::', json.dumps(transcription))
-        print('========================')
-        print('update segments', updatedSegments)
-        print('========================')
         print('analysisResponse completions:::::::', analysisResponse['completion'])
         completion =  analysisResponse['completion']
+        print('completion :::::::::::', completion)
         json =  re.search(r'```json(.*?)```', completion, re.DOTALL)
+        print('json :::::::::::', json)
         updatedCompletion = res.group(1).strip()
         print('updatedCompletion', updatedCompletion)
         # updatedCompletion = analysisResponse['completion'].replace('Here is the JSON output as per the instructions:', '').replace('Here is the JSON output with the requested information:', '').replace('```json', '').replace('```', '')
