@@ -81,33 +81,16 @@ def analysisProcess(local_file_paths):
         for index, segment in enumerate(segments):
             updatedSegments.append({'segment_id':index, 'text':segment['text'], 'timestamp':segment['timestamp']})
         analysisResponse = prompting_with_bedrock(updatedSegments)
-        # print('analysisResponse completions:::::::', analysisResponse['completion'])
         completion =  analysisResponse['completion']
-        # print('completion :::::::::::', completion)
         completion_json =  re.search(r'```json(.*?)```', completion, re.DOTALL)
-        # print('json :::::::::::', json)
-        # print('type of JSON:::::', type(json))
         updatedCompletion = completion_json.group(1).strip()
-        # print('updatedCompletion', updatedCompletion)
-        # print('typ eof updatedCompletion ', type(updatedCompletion))
         escape_pattern = r'\\[abfnrtv\\]'
         updatedCompletionNoEscape = re.sub(escape_pattern, '', updatedCompletion)
-        print('updatedCompletionNoEscape :::::::' , updatedCompletionNoEscape)
-        print('type of updatedCompletionNoEscape:::', type(updatedCompletionNoEscape))
-        # updatedCompletion = analysisResponse['completion'].replace('Here is the JSON output as per the instructions:', '').replace('Here is the JSON output with the requested information:', '').replace('```json', '').replace('```', '')
-        # print('updatedCompletion json dumps', json.dumps(updatedCompletion))
-        # updatedCompletions1= updatedCompletion.replace('\n', '')
-        # updatedCompletions2= updatedCompletions1.replace('\'', '')
-        # print('=======================')
-        # print('pdatedCompletions1 =====', updatedCompletions2)
-        print('transcription from whiper', transcription)
-        # updatedWhisperTranscription = 
         dbRecord = {
           'transcription_whisper': transcription,
           'updated_segments': updatedSegments,
           'analysis_response': updatedCompletionNoEscape
         }
-        print('DB RECORD CREATED :::::::', dbRecord)
         inserToDB(dbRecord)
         finalAnalysisResponse.append(json.dumps(dbRecord))
         print('analysisResponse', analysisResponse)
