@@ -96,9 +96,9 @@ def analysisProcess(local_file_paths):
         # print('=======================')
         # print('pdatedCompletions1 =====', updatedCompletions2)
         dbRecord = {
-         'transcription_whisper': json.dumps(transcription),
+          'transcription_whisper': json.dumps(transcription),
           'updated_segments': json.dumps(updatedSegments),
-          'analysis_response': json.dumps(updatedCompletion)
+          'analysis_response': updatedCompletion
         }
         print('DB RECORD CREATED :::::::', dbRecord)
         inserToDB(dbRecord)
