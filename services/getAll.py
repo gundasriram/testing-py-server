@@ -6,10 +6,14 @@ dynamodb = boto3.resource(
 TABLE_CALL_ANALYSIS='call-analysis-table'
 
 def getAllCalls():
+  try:
     analysisTable = dynamodb.Table(TABLE_CALL_ANALYSIS)
     response = table.query(
-     KeyConditionExpression=boto3.dynamodb.conditions.Key('PrimaryKey').eq('call')
+      KeyConditionExpression=boto3.dynamodb.conditions.Key('PrimaryKey').eq('call')
     )
     # Get the items from the response
     items = response.get('Items', [])
     return items
+  except ClientError as e:
+    print('Error in getAllCalls :::', e)
+    raise Exception(f"Error in getAllCalls: {e}")
