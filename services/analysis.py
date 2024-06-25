@@ -86,7 +86,7 @@ def analysisProcess(local_file_paths):
         print('completion :::::::::::', completion)
         json =  re.search(r'```json(.*?)```', completion, re.DOTALL)
         print('json :::::::::::', json)
-        updatedCompletion = res.group(1).strip()
+        updatedCompletion = json.group(1).strip()
         print('updatedCompletion', updatedCompletion)
         # updatedCompletion = analysisResponse['completion'].replace('Here is the JSON output as per the instructions:', '').replace('Here is the JSON output with the requested information:', '').replace('```json', '').replace('```', '')
         # print('updatedCompletion json dumps', json.dumps(updatedCompletion))
