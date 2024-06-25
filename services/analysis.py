@@ -95,7 +95,7 @@ def analysisProcess(local_file_paths):
           'analysis_response': json.dumps(updatedCompletionNoEscape)
         }
         inserToDB(dbRecord)
-        finalAnalysisResponse.append(json.dumps(dbRecord))
+        finalAnalysisResponse.append(dbRecord)
         print('analysisResponse', analysisResponse)
     print('*************** Analysis process Ended ***************')
     return finalAnalysisResponse
