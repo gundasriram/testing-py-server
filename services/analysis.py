@@ -86,6 +86,7 @@ def analysisProcess(local_file_paths):
         updatedCompletion = completion_json.group(1).strip()
         escape_pattern = r'\\[abfnrtv\\]'
         updatedCompletionNoEscape = re.sub(escape_pattern, '', updatedCompletion)
+        print('json.loads(json.dumps(transcription)' , json.loads(json.dumps(transcription)))
         dbRecord = {
           'transcription_whisper': json.loads(json.dumps(transcription)),
           'updated_segments': json.loads(json.dumps(updatedSegments)),
