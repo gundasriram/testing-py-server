@@ -13,6 +13,7 @@ def getAllCalls(data):
     )
     # Get the items from the response
     items = response.get('Items', [])
+    print('items ' ,items )
     return items
   except ClientError as e:
     print('Error in getAllCalls :::', e)
