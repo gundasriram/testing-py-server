@@ -89,6 +89,7 @@ def analysisProcess(local_file_paths):
         print('type of JSON:::::', type(json))
         updatedCompletion = json.group(1).strip()
         print('updatedCompletion', updatedCompletion)
+        print('typ eof updatedCompletion ', type(updatedCompletion))
         # updatedCompletion = analysisResponse['completion'].replace('Here is the JSON output as per the instructions:', '').replace('Here is the JSON output with the requested information:', '').replace('```json', '').replace('```', '')
         # print('updatedCompletion json dumps', json.dumps(updatedCompletion))
         # updatedCompletions1= updatedCompletion.replace('\n', '')
