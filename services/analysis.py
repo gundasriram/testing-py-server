@@ -87,14 +87,11 @@ def analysisProcess(local_file_paths):
         updatedCompletion = completion_json.group(1).strip()
         escape_pattern = r'\\[abfnrtv\\]'
         updatedCompletionNoEscape = re.sub(escape_pattern, '', updatedCompletion)
-        print('*****************************************************************')
-        print('json.loads(json.dumps(transcription)' , json.loads(json.dumps(transcription)))
-        print('*****************************************************************')
         whisper_dumps = json.dumps(transcription)
         updated_segments_dumps = json.dumps(updatedSegments)
         dbRecord = {
-          'transcription_whisper': json.loads(whisper_dumps),
-          'updated_segments': json.loads(updated_segments_dumps),
+          'transcription_whisper': json.dumps(transcription),
+          'updated_segments': json.dumps(updatedSegments),
           'analysis_response': json.loads(updatedCompletionNoEscape)
         }
         inserToDB(dbRecord)
