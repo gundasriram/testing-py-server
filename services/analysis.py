@@ -8,6 +8,7 @@ from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 import soundfile as sf
 import json
 import uuid
+import re
 #Imports END
 
 ############################################ Connections & Config START
@@ -87,7 +88,8 @@ def analysisProcess(local_file_paths):
         print('========================')
         print('analysisResponse completions:::::::', analysisResponse['completion'])
         completion =  analysisResponse['completion']
-        updatedCompletion = analysisResponse['completion'].replace('Here is the JSON output as per the instructions:', '').replace('Here is the JSON output with the requested information:', '').replace('```json', '').replace('```', '')
+        updatedCompletion = re.search(r'```json(.*?)```', completion, re.DOTALL)
+        # updatedCompletion = analysisResponse['completion'].replace('Here is the JSON output as per the instructions:', '').replace('Here is the JSON output with the requested information:', '').replace('```json', '').replace('```', '')
         # print('updatedCompletion json dumps', json.dumps(updatedCompletion))
         # updatedCompletions1= updatedCompletion.replace('\n', '')
         # updatedCompletions2= updatedCompletions1.replace('\'', '')
