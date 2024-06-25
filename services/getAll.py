@@ -8,7 +8,7 @@ TABLE_CALL_ANALYSIS='call-analysis-table'
 def getAllCalls(data):
   try:
     analysisTable = dynamodb.Table(TABLE_CALL_ANALYSIS)
-    response = table.query(
+    response = analysisTable.query(
       KeyConditionExpression=boto3.dynamodb.conditions.Key('PrimaryKey').eq('call')
     )
     # Get the items from the response
