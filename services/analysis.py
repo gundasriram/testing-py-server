@@ -84,10 +84,10 @@ def analysisProcess(local_file_paths):
         # print('analysisResponse completions:::::::', analysisResponse['completion'])
         completion =  analysisResponse['completion']
         # print('completion :::::::::::', completion)
-        json =  re.search(r'```json(.*?)```', completion, re.DOTALL)
+        completion_json =  re.search(r'```json(.*?)```', completion, re.DOTALL)
         # print('json :::::::::::', json)
         # print('type of JSON:::::', type(json))
-        updatedCompletion = json.group(1).strip()
+        updatedCompletion = completion_json.group(1).strip()
         # print('updatedCompletion', updatedCompletion)
         # print('typ eof updatedCompletion ', type(updatedCompletion))
         escape_pattern = r'\\[abfnrtv\\]'
