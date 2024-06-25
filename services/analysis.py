@@ -81,15 +81,15 @@ def analysisProcess(local_file_paths):
         for index, segment in enumerate(segments):
             updatedSegments.append({'segment_id':index, 'text':segment['text'], 'timestamp':segment['timestamp']})
         analysisResponse = prompting_with_bedrock(updatedSegments)
-        print('analysisResponse completions:::::::', analysisResponse['completion'])
+        # print('analysisResponse completions:::::::', analysisResponse['completion'])
         completion =  analysisResponse['completion']
-        print('completion :::::::::::', completion)
+        # print('completion :::::::::::', completion)
         json =  re.search(r'```json(.*?)```', completion, re.DOTALL)
-        print('json :::::::::::', json)
-        print('type of JSON:::::', type(json))
+        # print('json :::::::::::', json)
+        # print('type of JSON:::::', type(json))
         updatedCompletion = json.group(1).strip()
-        print('updatedCompletion', updatedCompletion)
-        print('typ eof updatedCompletion ', type(updatedCompletion))
+        # print('updatedCompletion', updatedCompletion)
+        # print('typ eof updatedCompletion ', type(updatedCompletion))
         escape_pattern = r'\\[abfnrtv\\]'
         updatedCompletionNoEscape = re.sub(escape_pattern, '', updatedCompletion)
         print('updatedCompletionNoEscape :::::::' , updatedCompletionNoEscape)
@@ -100,6 +100,7 @@ def analysisProcess(local_file_paths):
         # updatedCompletions2= updatedCompletions1.replace('\'', '')
         # print('=======================')
         # print('pdatedCompletions1 =====', updatedCompletions2)
+        print('transcription from whiper', transcription)
         dbRecord = {
           'transcription_whisper': json.dumps(transcription),
           'updated_segments': json.dumps(updatedSegments),
