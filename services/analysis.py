@@ -101,9 +101,10 @@ def analysisProcess(local_file_paths):
         # print('=======================')
         # print('pdatedCompletions1 =====', updatedCompletions2)
         print('transcription from whiper', transcription)
+        # updatedWhisperTranscription = 
         dbRecord = {
-          'transcription_whisper': json.dumps(transcription),
-          'updated_segments': json.dumps(updatedSegments),
+          'transcription_whisper': transcription,
+          'updated_segments': updatedSegments,
           'analysis_response': updatedCompletionNoEscape
         }
         print('DB RECORD CREATED :::::::', dbRecord)
