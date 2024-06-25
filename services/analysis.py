@@ -87,8 +87,8 @@ def analysisProcess(local_file_paths):
         escape_pattern = r'\\[abfnrtv\\]'
         updatedCompletionNoEscape = re.sub(escape_pattern, '', updatedCompletion)
         dbRecord = {
-          'transcription_whisper': transcription,
-          'updated_segments': updatedSegments,
+          'transcription_whisper': json.loads(json.dumps(transcription)),
+          'updated_segments': json.loads(json.dumps(updatedSegments)),
           'analysis_response': updatedCompletionNoEscape
         }
         inserToDB(dbRecord)
