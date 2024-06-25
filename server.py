@@ -15,7 +15,7 @@ def handler():
     }
     return jsonify(response), 200
 @app.route('/api/get-all', methods=['POST'])
-def handler():
+def getAll():
     data = request.json
     finalresponse = getAllCalls(data)
     # Process the data as needed
