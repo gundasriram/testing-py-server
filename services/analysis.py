@@ -64,7 +64,7 @@ def callAnalysis(body):
     local_file_paths= getFilesToLocal(body)
     # process_with_whisper_api(local_file_paths)
     finalresponse = analysisProcess(local_file_paths)
-    print('')
+    print('finalresponse in call analysis', finalresponse)
     return finalresponse
   except ClientError as e:
     print('Error in callAnalysis :::', e)
@@ -90,6 +90,7 @@ def analysisProcess(local_file_paths):
         completion =  analysisResponse['completion']
         json =  re.search(r'```json(.*?)```', completion, re.DOTALL)
         updatedCompletion = res.group(1).strip()
+        print('updatedCompletion', updatedCompletion)
         # updatedCompletion = analysisResponse['completion'].replace('Here is the JSON output as per the instructions:', '').replace('Here is the JSON output with the requested information:', '').replace('```json', '').replace('```', '')
         # print('updatedCompletion json dumps', json.dumps(updatedCompletion))
         # updatedCompletions1= updatedCompletion.replace('\n', '')
@@ -101,6 +102,7 @@ def analysisProcess(local_file_paths):
           'updated_segments': json.dumps(updatedSegments),
           'analysis_response': json.dumps(updatedCompletion)
         }
+        print('DB RECORD CREATED :::::::', dbRecord)
         inserToDB(dbRecord)
         finalAnalysisResponse.append(json.dumps(dbRecord))
         print('analysisResponse', analysisResponse)
