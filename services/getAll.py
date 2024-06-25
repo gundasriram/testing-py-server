@@ -5,7 +5,7 @@ dynamodb = boto3.resource(
 )
 TABLE_CALL_ANALYSIS='call-analysis-table'
 
-def getAllCalls():
+def getAllCalls(data):
   try:
     analysisTable = dynamodb.Table(TABLE_CALL_ANALYSIS)
     response = table.query(
