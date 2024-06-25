@@ -90,9 +90,11 @@ def analysisProcess(local_file_paths):
         print('*****************************************************************')
         print('json.loads(json.dumps(transcription)' , json.loads(json.dumps(transcription)))
         print('*****************************************************************')
+        whisper_dumps = json.dumps(transcription)
+        updated_segments_dumps = json.dumps(updatedSegments)
         dbRecord = {
-          'transcription_whisper': json.dumps(transcription),
-          'updated_segments': json.dumps(updatedSegments),
+          'transcription_whisper': json.loads(whisper_dumps),
+          'updated_segments': json.loads(updated_segments_dumps),
           'analysis_response': json.loads(updatedCompletionNoEscape)
         }
         inserToDB(dbRecord)
