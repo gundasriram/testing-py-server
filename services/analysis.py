@@ -5,7 +5,6 @@ import boto3
 from openai import OpenAI
 import torch
 from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
-import soundfile as sf
 import json
 import uuid
 import re
