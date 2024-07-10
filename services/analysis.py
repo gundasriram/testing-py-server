@@ -1,8 +1,6 @@
 import datetime
-import whisper
 import os
 import boto3
-from openai import OpenAI
 import torch
 from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 import json
@@ -66,7 +64,7 @@ def callAnalysis(body):
     finalresponse = analysisProcess(local_file_paths)
     print('finalresponse in call analysis', finalresponse)
     return finalresponse
-  except ClientError as e:
+  except Exception as e:
     print('Error in callAnalysis :::', e)
     raise Exception(f"Error in callAnalysis: {e}")
 
@@ -98,7 +96,7 @@ def analysisProcess(local_file_paths):
         print('analysisResponse', analysisResponse)
     print('*************** Analysis process Ended ***************')
     return finalAnalysisResponse
-  except ClientError as e:
+  except Exception as e:
     print('Error in analysisProcess :::', e)
     raise Exception(f"Error in analysisProcess: {e}")
 
@@ -115,7 +113,7 @@ def getFilesToLocal(body):
     print('local_file_paths', local_file_paths)
     print('*************** Download files completed returning local file paths ***************')
     return local_file_paths  
-  except ClientError as e:
+  except Exception as e:
     print('Error in getFilesToLocal :::', e)
     raise Exception(f"Error getFilesToLocal: {e}")
 
@@ -125,7 +123,7 @@ def download_from_s3(file_name):
     print('S3_BUCKET', S3_BUCKET)
     s3.download_file(S3_BUCKET, file_name, local_path)
     return local_path
-  except ClientError as e:
+  except Exception as e:
     print('Error in download_from_s3 :::', e)
     raise Exception(f"Error download_from_s3: {e}")
 
@@ -138,7 +136,7 @@ def process_with_whisper_hugging_face_model(file_path):
     print('RESPONSE:: process_with_whisper_hugging_face_model')
     print('result', result)
     return result
-  except ClientError as e:
+  except Exception as e:
     print('Error in process_with_whisper_hugging_face_model :::', e)
     raise Exception(f"Error in process_with_whisper_hugging_face_model: {e}")
 
@@ -159,7 +157,7 @@ def prompting_with_bedrock(transcription):
     response_body = json.loads(response.get('body').read())
     print('response from AWS Bedrock', response_body)
     return response_body
-  except ClientError as e:
+  except Exception as e:
     print('Error in prompting_with_bedrock :::', e)
     raise Exception(f"Error in prompting_with_bedrock: {e}")
 
@@ -173,7 +171,7 @@ def inserToDB(dbRecord):
     print('item', item)
     response = analysisTable.put_item(Item=item)
     print('response inserting to DB::: ',response)
-  except ClientError as e:
+  except Exception as e:
     print('Error inserting analysis to DB:::', e)
     raise Exception(f"Insert failed: {e}")
 
