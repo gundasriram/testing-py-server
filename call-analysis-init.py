@@ -27,13 +27,13 @@ def init():
             response = analysisTable.update_item(
                 Key={
                     'type': 'CALL',
-                    'call_id': call['call_id']
+                    # 'call_id': call['call_id']
                 },
                 UpdateExpression="set call_id = :new_call_id",
                 ExpressionAttributeValues={
                     ':new_call_id': updated_call_id
                 },
-                ConditionExpression="attribute_exists(type) AND attribute_exists(call_id)",
+                ConditionExpression="attribute_exists(type)",
                 ReturnValues="UPDATED_NEW"
             )
             callAnalysis(body, call_id)
