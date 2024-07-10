@@ -56,44 +56,44 @@ pipe = pipeline(
 
 
 # Base Function
-def callAnalysis(body, call_id):
+def callAnalysis(file, call_id):
   try:
     print('Call Analysis', body)
-    local_file_paths= getFilesToLocal(body)
-    # process_with_whisper_api(local_file_paths)
-    finalresponse = analysisProcess(local_file_paths, call_id)
+    local_file_path= getFilesToLocal(file)
+    # process_with_whisper_api(local_file_path)
+    finalresponse = analysisProcess(local_file_path, call_id)
     print('finalresponse in call analysis', finalresponse)
     return finalresponse
   except Exception as e:
     print('Error in callAnalysis :::', e)
     raise Exception(f"Error in callAnalysis: {e}")
 
-def analysisProcess(local_file_paths, call_id):
+def analysisProcess(file_path, call_id):
   try:
     print('*************** Analysis process Started ***************')
     finalAnalysisResponse=[]
-    for file_path in local_file_paths:
-        transcription = process_with_whisper_hugging_face_model(file_path)
-        segments = transcription['chunks']
-        updatedSegments=[]
-        for index, segment in enumerate(segments):
-            updatedSegments.append({'segment_id':index, 'text':segment['text'], 'timestamp':segment['timestamp']})
-        analysisResponse = prompting_with_bedrock(updatedSegments)
-        completion =  analysisResponse['completion']
-        completion_json =  re.search(r'```json(.*?)```', completion, re.DOTALL)
-        updatedCompletion = completion_json.group(1).strip()
-        escape_pattern = r'\\[abfnrtv\\]'
-        updatedCompletionNoEscape = re.sub(escape_pattern, '', updatedCompletion)
-        whisper_dumps = json.dumps(transcription)
-        updated_segments_dumps = json.dumps(updatedSegments)
-        dbRecord = {
-          'transcription_whisper': json.dumps(transcription),
-          'updated_segments': json.dumps(updatedSegments),
-          'analysis_response': json.loads(updatedCompletionNoEscape)
-        }
-        inserToDB(dbRecord, call_id)
-        finalAnalysisResponse.append(dbRecord)
-        print('analysisResponse', analysisResponse)
+    # for file_path in local_file_paths:
+    transcription = process_with_whisper_hugging_face_model(file_path)
+    segments = transcription['chunks']
+    updatedSegments=[]
+    for index, segment in enumerate(segments):
+        updatedSegments.append({'segment_id':index, 'text':segment['text'], 'timestamp':segment['timestamp']})
+    analysisResponse = prompting_with_bedrock(updatedSegments)
+    completion =  analysisResponse['completion']
+    completion_json =  re.search(r'```json(.*?)```', completion, re.DOTALL)
+    updatedCompletion = completion_json.group(1).strip()
+    escape_pattern = r'\\[abfnrtv\\]'
+    updatedCompletionNoEscape = re.sub(escape_pattern, '', updatedCompletion)
+    whisper_dumps = json.dumps(transcription)
+    updated_segments_dumps = json.dumps(updatedSegments)
+    dbRecord = {
+      'transcription_whisper': json.dumps(transcription),
+      'updated_segments': json.dumps(updatedSegments),
+      'analysis_response': json.loads(updatedCompletionNoEscape)
+    }
+    inserToDB(dbRecord, call_id)
+    finalAnalysisResponse.append(dbRecord)
+    print('analysisResponse', analysisResponse)
     print('*************** Analysis process Ended ***************')
     return finalAnalysisResponse
   except Exception as e:
@@ -101,18 +101,17 @@ def analysisProcess(local_file_paths, call_id):
     raise Exception(f"Error in analysisProcess: {e}")
 
 #FROM S3 to local
-def getFilesToLocal(body):
+def getFilesToLocal(file):
   try:
     print('*************** Download files from cloud ***************')
-    files = body['files']
-    print('files ::: ', files)
-    local_file_paths=[]
-    for file in files:
-        temp=download_from_s3(file)
-        local_file_paths.append(temp)
+    # files = body['files']
+    print('file ::: ', file)
+    # local_file_paths=[]
+    # for file in files:
+    temp=download_from_s3(file)
     print('local_file_paths', local_file_paths)
     print('*************** Download files completed returning local file paths ***************')
-    return local_file_paths  
+    return temp  
   except Exception as e:
     print('Error in getFilesToLocal :::', e)
     raise Exception(f"Error getFilesToLocal: {e}")
