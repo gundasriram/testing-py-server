@@ -24,8 +24,8 @@ def init():
             call_id = call['call_id']
             print('call_id', call_id)
             updated_call_id = call_id.replace("PENDING", "INPROGRESS")
-            response = analysisTable.update_item(
-                Key={
+            params = {
+                 Key={
                     'type': 'CALL',
                     # 'call_id': call['call_id']
                 },
@@ -33,8 +33,12 @@ def init():
                 ExpressionAttributeValues={
                     ':new_call_id': updated_call_id
                 },
-                # ConditionExpression="attribute_exists(type)",
+                ConditionExpression="attribute_exists(type)",
                 ReturnValues="UPDATED_NEW"
+            }
+            print('params', params)
+            response = analysisTable.update_item(
+               params
             )
             callAnalysis(body, call_id)
     except Exception as e:
