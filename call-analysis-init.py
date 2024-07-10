@@ -33,7 +33,7 @@ def init():
                 ExpressionAttributeValues={
                     ':new_call_id': updated_call_id
                 },
-                ConditionExpression="attribute_exists(type)",
+                # ConditionExpression="attribute_exists(type)",
                 ReturnValues="UPDATED_NEW"
             )
             callAnalysis(body, call_id)
