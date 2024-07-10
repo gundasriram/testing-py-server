@@ -22,6 +22,7 @@ def init():
                 ]
             }
             call_id = call['call_id']
+            print('call_id', call_id)
             updated_call_id = call_id.replace("PENDING", "INPROGRESS")
             response = analysisTable.update_item(
                 Key={
