@@ -56,19 +56,19 @@ pipe = pipeline(
 
 
 # Base Function
-def callAnalysis(body):
+def callAnalysis(body, call_id):
   try:
     print('Call Analysis', body)
     local_file_paths= getFilesToLocal(body)
     # process_with_whisper_api(local_file_paths)
-    finalresponse = analysisProcess(local_file_paths)
+    finalresponse = analysisProcess(local_file_paths, call_id)
     print('finalresponse in call analysis', finalresponse)
     return finalresponse
   except Exception as e:
     print('Error in callAnalysis :::', e)
     raise Exception(f"Error in callAnalysis: {e}")
 
-def analysisProcess(local_file_paths):
+def analysisProcess(local_file_paths, call_id):
   try:
     print('*************** Analysis process Started ***************')
     finalAnalysisResponse=[]
@@ -91,7 +91,7 @@ def analysisProcess(local_file_paths):
           'updated_segments': json.dumps(updatedSegments),
           'analysis_response': json.loads(updatedCompletionNoEscape)
         }
-        inserToDB(dbRecord)
+        inserToDB(dbRecord, call_id)
         finalAnalysisResponse.append(dbRecord)
         print('analysisResponse', analysisResponse)
     print('*************** Analysis process Ended ***************')
@@ -161,15 +161,31 @@ def prompting_with_bedrock(transcription):
     print('Error in prompting_with_bedrock :::', e)
     raise Exception(f"Error in prompting_with_bedrock: {e}")
 
-def inserToDB(dbRecord):
+def inserToDB(dbRecord, call_id):
   try:
     analysisTable = dynamodb.Table(TABLE_CALL_ANALYSIS)
     item = dbRecord
     item['type'] = 'CALL'
-    item['call_id'] = str(uuid.uuid4())
+    # item['call_id'] = str(uuid.uuid4())
     item['timestamp'] = str(datetime.datetime.now())
     print('item', item)
-    response = analysisTable.put_item(Item=item)
+    # response = analysisTable.put_item(Item=item)
+    updated_call_id = call_id.replace("PENDING", "DONE")
+    print('updated_call_id', updated_call_id)
+    response = analysisTable.update_item(
+      Key={
+          'type': 'CALL',
+          'call_id': call_id
+      },
+      UpdateExpression="set call_id = :new_call_id, transcription_whisper = :transcription_whisper, updated_segments = :updated_segments, analysis_response = :analysis_response",
+      ExpressionAttributeValues={
+          ':transcription_whisper': dbRecord['transcription_whisper'],
+          ':updated_segments': dbRecord['updated_segments'],
+          ':analysis_response': dbRecord['analysis_response'],
+          ':new_call_id': updated_call_id
+      },
+      ReturnValues="UPDATED_NEW"
+    )
     print('response inserting to DB::: ',response)
   except Exception as e:
     print('Error inserting analysis to DB:::', e)
