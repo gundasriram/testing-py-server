@@ -172,9 +172,9 @@ def inserToDB(dbRecord, call):
     item['type'] = 'CALL'
     item['call_id'] = updated_call_id
     item['timestamp'] = str(datetime.datetime.now())
-    print('item', item)
-    updated_call_id = call_id.replace("PENDING", "DONE")
-    print('updated_call_id', updated_call_id)
+    print('============================ item', item)
+    updated_call_id = item['call_id'].replace("PENDING", "DONE")
+    print('====================== updated_call_id', updated_call_id)
     response = analysisTable.put_item(Item=item)
     print('response inserting to DB::: ',response)
   except Exception as e:
