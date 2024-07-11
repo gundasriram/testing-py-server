@@ -14,7 +14,7 @@ def checkTaskStatus(call_id):
         KeyConditionExpression=boto3.dynamodb.conditions.Key('type').eq('CALL') &
                          boto3.dynamodb.conditions.Key('call_id').eq(call_id)
     )
-    if response and len(response.Items) > 0:
+    if response and len(response['Items']) > 0:
         return True
     else:
         return False
