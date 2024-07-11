@@ -111,7 +111,7 @@ def getFilesToLocal(file):
     # local_file_paths=[]
     # for file in files:
     temp=download_from_s3(file)
-    print('local_file_paths', local_file_paths)
+    print('file', file)
     print('*************** Download files completed returning local file paths ***************')
     return temp  
   except Exception as e:
