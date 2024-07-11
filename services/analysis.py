@@ -58,13 +58,13 @@ pipe = pipeline(
 # Base Function
 def callAnalysis(file, call):
   try:
-    print('Call Analysis file', file)
-    print('Call Analysis call', call)
-
+    print('*************** callAnalysis Function Started ***************')
+    print('*************** Call Analysis file :::', file)
+    print('*************** Call Analysis call :::', call)
     local_file_path= getFilesToLocal(file)
-    # process_with_whisper_api(local_file_path)
     finalresponse = analysisProcess(local_file_path, call)
     print('finalresponse in call analysis', finalresponse)
+    print('*************** callAnalysis Function END ***************')
     return finalresponse
   except Exception as e:
     print('Error in callAnalysis :::', e)
@@ -74,7 +74,6 @@ def analysisProcess(file_path, call):
   try:
     print('*************** Analysis process Started ***************')
     finalAnalysisResponse=[]
-    # for file_path in local_file_paths:
     transcription = process_with_whisper_hugging_face_model(file_path)
     segments = transcription['chunks']
     updatedSegments=[]
@@ -131,8 +130,6 @@ def download_from_s3(file_name):
 def process_with_whisper_hugging_face_model(file_path):
   try:
     print('*************** Started process_with_whisper_hugging_face_model')
-    # audio_file= open(file_path, "rb")
-    # audio_sf_file, sample_rate = sf.read(file_path)
     result = pipe(file_path)
     print('RESPONSE:: process_with_whisper_hugging_face_model')
     print('result', result)
@@ -164,6 +161,7 @@ def prompting_with_bedrock(transcription):
 
 def inserToDB(dbRecord, call):
   try:
+    print('*************** inserToDB process Started ***************')
     analysisTable = dynamodb.Table(TABLE_CALL_ANALYSIS)
     params = {'type': 'CALL', 'call_id': call['call_id']}
     analysisTable.delete_item(Key=params)
