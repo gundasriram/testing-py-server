@@ -172,6 +172,7 @@ def inserToDB(dbRecord, call):
     item['type'] = 'CALL'
     item['call_id'] = updated_call_id
     item['timestamp'] = str(datetime.datetime.now())
+    item['s3_file_path'] = call['s3_file_path']
     print('============================ item', item)
     updated_call_id = item['call_id'].replace("PENDING", "DONE")
     print('====================== updated_call_id', updated_call_id)
