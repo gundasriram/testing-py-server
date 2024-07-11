@@ -58,7 +58,9 @@ pipe = pipeline(
 # Base Function
 def callAnalysis(file, call):
   try:
-    print('Call Analysis', body)
+    print('Call Analysis file', file)
+    print('Call Analysis call', call)
+
     local_file_path= getFilesToLocal(file)
     # process_with_whisper_api(local_file_path)
     finalresponse = analysisProcess(local_file_path, call)
