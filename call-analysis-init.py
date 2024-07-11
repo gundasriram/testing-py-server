@@ -16,28 +16,17 @@ def init():
         )
         print('pending_call_analysis', pending_call_analysis)
         for call in pending_call_analysis['Items']:
-            body= {
-                "files": [
-                    call['s3_file_path']
-                ]
-            }
+            file = call['s3_file_path']
             call_id = call['call_id']
             print('call_id', call_id)
             updated_call_id = call_id.replace("PENDING", "INPROGRESS")
             print('updated_call_id', updated_call_id)
-            response = analysisTable.update_item(
-                Key={
-                    'type': 'CALL',
-                    # 'call_id': call['call_id']
-                },
-                UpdateExpression="set call_id = :new_call_id",
-                ExpressionAttributeValues={
-                    ':new_call_id': updated_call_id
-                },
-                ConditionExpression="attribute_exists(type)",
-                ReturnValues="UPDATED_NEW"
-            )
-            callAnalysis(body, call_id)
+            params = {'type': 'CALL', 'call_id': call_id}
+            print('params', params)
+            analysisTable.delete_item(Key=params)
+            call['call_id'] = updated_call_id
+            response = analysisTable.put_item(Item=item)
+            callAnalysis(file, call)
     except Exception as e:
         print('Error in callAnalysis init :::', e)
         raise Exception(f"Error in callAnalysis init: {e}")
