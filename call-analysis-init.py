@@ -10,7 +10,7 @@ TABLE_CALL_ANALYSIS='call-analysis-table'
 analysisTable = dynamodb.Table(TABLE_CALL_ANALYSIS)
 
 def checkTaskStatus(call_id):
-    response = table.query(
+    response = analysisTable.query(
         KeyConditionExpression=boto3.dynamodb.conditions.Key('type').eq('CALL') &
                          boto3.dynamodb.conditions.Key('call_id').eq(call_id)
     )
