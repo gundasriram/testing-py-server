@@ -4,16 +4,20 @@ class Database:
     def __init__(self):
         self.conn = None
     def connect(self):
-        if self.conn is None:
-            self.conn = mysql.connector.connect(
-                auth_plugin='mysql_native_password',
-                host="localhost",
-                user="root",
-                password="admin",
-                port=3306,
-                database="world",
-            )
-        return self.conn
+        try:
+            if self.conn is None:
+                self.conn = mysql.connector.connect(
+                    auth_plugin='mysql_native_password',
+                    host="localhost",
+                    user="root",
+                    password="admin",
+                    port=3306,
+                    database="world",
+                )
+            return self.conn
+        except Exception as e:
+            print('Error in connect DB init :::', e)
+            raise Exception(f"Error in connect init: {e}")
     def close(self):
         if self.conn is not None and self.conn.is_connected():
             self.conn.close()
