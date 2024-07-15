@@ -99,7 +99,7 @@ class Database:
             print('*************** analysis_data ', analysis_data)
             cursor = self.conn.cursor(dictionary=True)
             cursor.execute(query, (data, ))
-            mydb.commit()
+            self.conn.commit()
             cursor.close()
             print('*************** updateFinalAnalysis END ***************')
         except Exception as e:
