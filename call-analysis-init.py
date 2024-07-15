@@ -5,7 +5,7 @@ from services.analysis import callAnalysis
 
 def checkTaskStatus(call_id):
     res = db.getOneAnalysis(call_id)
-    if data['task_status'] == 'INPROGRESS':
+    if res['task_status'] == 'INPROGRESS':
         return False
     else:
         return True
@@ -17,10 +17,8 @@ def init():
         pending_call_analysis = db.getAllPendingTask()
         print('*************** Pending Calls START ***************')
         print(pending_call_analysis)
-        print('pending_call_analysis type ::', type(pending_call_analysis))
         print('*************** Pending Calls END***************')
         for call in pending_call_analysis:
-            print('type of call', type(call))
             print('call', call)
             file = call['s3_file_path']
             call_id = call['call_id']
