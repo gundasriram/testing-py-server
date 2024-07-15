@@ -50,3 +50,4 @@ tqdm==4.66.4
 transformers @ git+https://github.com/huggingface/transformers.git@74a207404e8d4524d1fdc4aa23789694f9eef347
 typing_extensions==4.12.2
 Werkzeug==3.0.3
+mysql-connector-python==9.0.0
