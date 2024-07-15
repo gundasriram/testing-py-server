@@ -6,7 +6,8 @@ from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 import json
 import uuid
 import re
-from decimal import Decimal
+from decimal import decimal
+from db.db_connection import db
 #Imports END
 
 ############################################ Connections & Config START
@@ -20,11 +21,6 @@ s3 = boto3.client(
     's3',
     region_name='ap-southeast-1'
   )
-dynamodb = boto3.resource(
-    'dynamodb',
-    region_name="ap-southeast-1"
-  )
-TABLE_CALL_ANALYSIS='call-analysis-table'
 ############################################ Connections & Config END
 
 ###################### Model Setup ##########################
@@ -162,25 +158,17 @@ def prompting_with_bedrock(transcription):
 def inserToDB(dbRecord, call):
   try:
     print('*************** inserToDB process Started ***************')
-    analysisTable = dynamodb.Table(TABLE_CALL_ANALYSIS)
-    params = {'type': 'CALL', 'call_id': call['call_id']}
-    analysisTable.delete_item(Key=params)
-    updated_call_id = call['call_id'].replace("INPROGRESS", "DONE")
-    item = dbRecord
-    item['type'] = 'CALL'
-    item['call_id'] = updated_call_id
-    item['timestamp'] = str(datetime.datetime.now())
-    item['s3_file_path'] = call['s3_file_path']
-    print('============================ item', item)
-    updated_call_id = item['call_id'].replace("PENDING", "DONE")
-    print('====================== updated_call_id', updated_call_id)
-    response = analysisTable.put_item(Item=item)
-    print('response inserting to DB::: ',response)
+    db.updateTaskStatusforCallId('DONE', call['call_id'])
+    analysis_response = dbRecord['analysis_response']
+    db.updateFinalAnalysis(
+      {'call_id': call['call_id']},
+      analysis_response,
+      dbRecord['transcription_whisper']
+    )
+    print('*************** inserToDB process Completed ***************')
   except Exception as e:
     print('Error inserting analysis to DB:::', e)
     raise Exception(f"Insert failed: {e}")
-
-
 
 def get_prompt(data):
     prompt =f'''
