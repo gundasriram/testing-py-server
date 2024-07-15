@@ -4,6 +4,7 @@ class Database:
     def __init__(self):
         self.conn = None
     def connect(self):
+        print('*************** CONNECTING TO DB ***************')
         try:
             if self.conn is None:
                 self.conn = mysql.connector.connect(
