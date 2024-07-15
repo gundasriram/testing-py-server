@@ -72,12 +72,6 @@ class Database:
             print('*************** updateFinalAnalysis Start ***************')
             analysis_data['transcription_whisper'] = transcription_whisper
             # Prepare the SET clause and WHERE clause strings
-            set_clause = ', '.join([f"{key} = %s" for key in analysis_data.keys()])
-            where_clause_str = ' AND '.join([f"{key} = %s" for key in where_clause.keys()])
-            query = f"UPDATE call_analysis_2 SET {set_clause} WHERE {where_clause_str}"
-            # Combine the values from analysis_data and where_clause
-            values = list(analysis_data.values()) + list(where_clause.values())
-            print('type of transcription_whisper', type(analysis_data['transcription_whisper']))
             data = {
                 'call_summary': analysis_data['call_summary'],
                 'call_objective': analysis_data['call_objective'],
@@ -85,9 +79,14 @@ class Database:
                 'overall_conversation_rating_for_agents': analysis_data['overall_conversation_rating_for_agents'],
                 'overall_sentiment_of_the_call': analysis_data['overall_sentiment_of_the_call'],
                 'overall_customer_satisfaction_level': analysis_data['overall_customer_satisfaction_level'],
-                'overall_call_time': analysis_data['overall_call_time'],
-                'call_id': where_clause['call_id']
+                'overall_call_time': analysis_data['overall_call_time']
             }
+            set_clause = ', '.join([f"{key} = %s" for key in data.keys()])
+            where_clause_str = ' AND '.join([f"{key} = %s" for key in where_clause.keys()])
+            query = f"UPDATE call_analysis SET {set_clause} WHERE {where_clause_str}"
+            # Combine the values from analysis_data and where_clause
+            values = list(analysis_data.values()) + list(where_clause.values())
+            print('type of transcription_whisper', type(analysis_data['transcription_whisper']))
             print('*************** data', data)
             print('*************** query', query)
             print('*************** analysis_data ', analysis_data)
