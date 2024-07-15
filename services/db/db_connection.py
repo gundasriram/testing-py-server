@@ -88,7 +88,7 @@ class Database:
                 # 'issue_resolved': analysis_data['issue_resolved'],
                 # 'called_more_than_once': analysis_data['called_more_than_once'],
                 'overall_call_time': analysis_data['overall_call_time'],
-                'overall_conversation_rating_for_agents': analysis_data['overall_conversation_rating_for_agents']
+                'overall_conversation_rating_for_agents': analysis_data['overall_conversation_rating_for_agents'],
                 'overall_customer_satisfaction_level': analysis_data['overall_customer_satisfaction_level'],
                 'transcription_whisper': analysis_data['transcription_whisper']
             }
