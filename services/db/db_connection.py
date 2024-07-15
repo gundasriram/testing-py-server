@@ -85,7 +85,7 @@ class Database:
             where_clause_str = ' AND '.join([f"{key} = %s" for key in where_clause.keys()])
             query = f"UPDATE call_analysis SET {set_clause} WHERE {where_clause_str}"
             # Combine the values from analysis_data and where_clause
-            values = list(analysis_data.values()) + list(where_clause.values())
+            values = list(data.values()) + list(where_clause.values())
             print('type of transcription_whisper', type(analysis_data['transcription_whisper']))
             print('*************** data', data)
             print('*************** query', query)
