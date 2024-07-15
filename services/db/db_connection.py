@@ -68,6 +68,7 @@ class Database:
 
     def updateFinalAnalysis(self, where_clause, analysis_data, transcription_whisper):
         try:
+            print('*************** updateFinalAnalysis Start ***************')
             analysis_data['transcription_whisper'] = transcription_whisper
             set_clause = ', '.join([f"{key} = %s" for key in analysis_data.keys()])
             where_clause_str = ' AND '.join([f"{key} = %s" for key in where_clause.keys()])
@@ -78,6 +79,7 @@ class Database:
             cursor.execute(query, tuple(values))
             mydb.commit()
             cursor.close()
+            print('*************** updateFinalAnalysis END ***************')
         except Exception as e:
             print('Error in updateFinalAnalysis :::', e)
             raise Exception(f"Error in updateFinalAnalysis: {e}")
