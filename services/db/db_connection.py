@@ -75,7 +75,7 @@ class Database:
             # where_clause_str = ' AND '.join([f"{key} = %s" for key in where_clause.keys()])
             # query = f"UPDATE call_analysis SET {set_clause} WHERE {where_clause_str}"
             # values = list(analysis_data.values()) + list(where_clause.values())
-            query = "UPDATE call_analysis SET customer_meta_data = %s, call_summary = %s, call_objective = %s, product_discussed = %s, agent_actions = %s, overall_conversation_rating_for_agents = %s, overall_sentiment_of_the_call = %s, overall_customer_satisfaction_level = %s, overall_call_time = %s, WHERE call_id = %s"
+            query = "UPDATE call_analysis SET customer_meta_data = %s, call_summary = %s, call_objective = %s, product_discussed = %s, overall_conversation_rating_for_agents = %s, overall_sentiment_of_the_call = %s, overall_customer_satisfaction_level = %s, overall_call_time = %s, WHERE call_id = %s"
             print('type of transcription_whisper', type(analysis_data['transcription_whisper']))
             data = {
                 # 'segregated_conversations': analysis_data['segregated_conversations'],
@@ -83,7 +83,7 @@ class Database:
                 'call_summary': analysis_data['call_summary'],
                 'call_objective': analysis_data['call_objective'],
                 'product_discussed': analysis_data['product_discussed'],
-                'agent_actions': analysis_data['agent_actions'],
+                # 'agent_actions': analysis_data['agent_actions'],
                 'overall_conversation_rating_for_agents': analysis_data['overall_conversation_rating_for_agents'],
                 'overall_sentiment_of_the_call': analysis_data['overall_sentiment_of_the_call'],
                 'overall_customer_satisfaction_level': analysis_data['overall_customer_satisfaction_level'],
