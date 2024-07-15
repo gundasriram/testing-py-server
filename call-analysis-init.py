@@ -1,7 +1,7 @@
 
 import boto3
-from services.analysis import callAnalysis
 from services.db.db_connection import db
+from services.analysis import callAnalysis
 
 def checkTaskStatus(call_id):
     res = db.getOneAnalysis(call_id)
