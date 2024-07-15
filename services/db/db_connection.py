@@ -75,28 +75,30 @@ class Database:
             # where_clause_str = ' AND '.join([f"{key} = %s" for key in where_clause.keys()])
             # query = f"UPDATE call_analysis SET {set_clause} WHERE {where_clause_str}"
             # values = list(analysis_data.values()) + list(where_clause.values())
-            query = "UPDATE call_analysis SET segregated_conversations = %s, customer_meta_data = %s, call_summary = %s, call_objective = %s, product_discussed = %s, agent_actions = %s, overall_conversation_rating_for_agents = %s, overall_sentiment_of_the_call = %s, overall_customer_satisfaction_level = %s, overall_call_time = %s, individual_call_time = %s, transcription_whisper = %s WHERE call_id = %s"
+            query = "UPDATE call_analysis SET segregated_conversations = %s, customer_meta_data = %s, call_summary = %s, call_objective = %s, product_discussed = %s, agent_actions = %s, overall_conversation_rating_for_agents = %s, overall_sentiment_of_the_call = %s, overall_customer_satisfaction_level = %s, overall_call_time = %s, individual_call_time = %s, WHERE call_id = %s"
+            print('type of transcription_whisper', type(analysis_data['transcription_whisper']))
             data = {
-                'product_discussed': analysis_data['product_discussed'],
-                'overall_sentiment_of_the_call': analysis_data['overall_sentiment_of_the_call'],
-                'call_objective': analysis_data['call_objective'],
-                'call_summary': analysis_data['call_summary'],
-                'customer_meta_data': analysis_data['customer_meta_data'],
-                'individual_call_time': analysis_data['individual_call_time'],
                 'segregated_conversations': analysis_data['segregated_conversations'],
+                'customer_meta_data': analysis_data['customer_meta_data'],
+                'call_summary': analysis_data['call_summary'],
+                'call_objective': analysis_data['call_objective'],
+                'product_discussed': analysis_data['product_discussed'],
                 'agent_actions': analysis_data['agent_actions'],
+                'overall_conversation_rating_for_agents': analysis_data['overall_conversation_rating_for_agents'],
+                'overall_sentiment_of_the_call': analysis_data['overall_sentiment_of_the_call'],
+                'overall_customer_satisfaction_level': analysis_data['overall_customer_satisfaction_level'],
+                'overall_call_time': analysis_data['overall_call_time'],
+                'individual_call_time': analysis_data['individual_call_time'],
+                'call_id': where_clause['call_id']
                 # 'issue_resolved': analysis_data['issue_resolved'],
                 # 'called_more_than_once': analysis_data['called_more_than_once'],
-                'overall_call_time': analysis_data['overall_call_time'],
-                'overall_conversation_rating_for_agents': analysis_data['overall_conversation_rating_for_agents'],
-                'overall_customer_satisfaction_level': analysis_data['overall_customer_satisfaction_level'],
-                'transcription_whisper': analysis_data['transcription_whisper']
+                # 'transcription_whisper': analysis_data['transcription_whisper']
             }
             print('*************** data', data)
             print('*************** query', query),
             print('*************** analysis_data ', analysis_data)
             cursor = self.conn.cursor(dictionary=True)
-            cursor.execute(query, data)
+            cursor.execute(query, (data, ))
             mydb.commit()
             cursor.close()
             print('*************** updateFinalAnalysis END ***************')
