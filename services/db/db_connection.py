@@ -67,7 +67,7 @@ class Database:
             print('Error in getOneAnalysis :::', e)
             raise Exception(f"Error in getOneAnalysis: {e}")
 
-    def updateFinalAnalysis(where_clause, analysis_data, transcription_whisper):
+    def updateFinalAnalysis(self, where_clause, analysis_data, transcription_whisper):
         try:
             print('*************** updateFinalAnalysis Start ***************')
             analysis_data['transcription_whisper'] = transcription_whisper
@@ -91,9 +91,9 @@ class Database:
             print('*************** data', data)
             print('*************** query', query)
             print('*************** analysis_data ', analysis_data)
-            cursor = mydb.cursor()
+            cursor = self.conn.cursor()
             cursor.execute(query, values)
-            mydb.commit()
+            self.conn.commit()
             cursor.close()
             print('*************** updateFinalAnalysis END ***************')
         except Exception as e:
