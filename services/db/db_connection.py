@@ -1,5 +1,13 @@
+import os
 import mysql.connector
 import json
+
+MYSQL_HOST= os.environ['MYSQL_HOST']
+MYSQL_USER= os.environ['MYSQL_USER']
+MYSQL_PASSWORD= os.environ['MYSQL_PASSWORD']
+MYSQL_PORT= os.environ['MYSQL_PORT']
+MYSQL_DATABASE= os.environ['MYSQL_DATABASE']
+
 class Database:
     def __init__(self):
         self.conn = None
@@ -9,11 +17,11 @@ class Database:
             if self.conn is None:
                 self.conn = mysql.connector.connect(
                     auth_plugin='mysql_native_password',
-                    host="localhost",
-                    user="root",
-                    password="admin",
-                    port=3306,
-                    database="world",
+                    host=MYSQL_HOST,
+                    user=MYSQL_USER,
+                    password=MYSQL_PASSWORD,
+                    port=MYSQL_PORT,
+                    database=MYSQL_DATABASE,
                 )
             return self.conn
         except Exception as e:
