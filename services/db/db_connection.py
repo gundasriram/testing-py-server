@@ -90,6 +90,7 @@ class Database:
             print('*************** data', data)
             print('*************** query', query)
             print('*************** analysis_data ', analysis_data)
+            print('*************** values', values)
             cursor = self.conn.cursor()
             cursor.execute(query, values)
             self.conn.commit()
