@@ -21,6 +21,7 @@ class Database:
             raise Exception(f"Error in connect init: {e}")
     def close(self):
         if self.conn is not None and self.conn.is_connected():
+            print('*************** CLOSING DB CONNECTION ***************')
             self.conn.close()
             self.conn = None
 
