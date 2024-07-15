@@ -33,7 +33,7 @@ class Database:
             rows = cursor.fetchall()
             json_data = json.dumps(rows, indent=4) 
             cursor.close()
-            return json.dumps(json_data)
+            return json.loads(json_data)
         except Exception as e:
             print('Error in getAllPending init :::', e)
             raise Exception(f"Error in getAllPending init: {e}")
