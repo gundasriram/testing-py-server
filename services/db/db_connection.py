@@ -4,8 +4,8 @@ class Database:
     def __init__(self):
         self.conn = None
     def connect(self):
-        print('*************** CONNECTING TO DB ***************')
         try:
+            print('*************** CONNECTING TO DB ***************')
             if self.conn is None:
                 self.conn = mysql.connector.connect(
                     auth_plugin='mysql_native_password',
