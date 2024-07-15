@@ -94,6 +94,7 @@ class Database:
                 # 'called_more_than_once': analysis_data['called_more_than_once'],
                 # 'transcription_whisper': analysis_data['transcription_whisper']
             }
+            print('type of data', type(data))
             print('*************** data', data)
             print('*************** query', query),
             print('*************** analysis_data ', analysis_data)
