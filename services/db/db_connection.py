@@ -75,7 +75,8 @@ class Database:
             where_clause_str = ' AND '.join([f"{key} = %s" for key in where_clause.keys()])
             query = f"UPDATE call_analysis SET {set_clause} WHERE {where_clause_str}"
             values = list(analysis_data.values()) + list(where_clause.values())
-            print('query', query)
+            print('query', query),
+            print('values', values )
             cursor = self.conn.cursor(dictionary=True)
             cursor.execute(query, tuple(values))
             mydb.commit()
