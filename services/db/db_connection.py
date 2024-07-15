@@ -71,6 +71,9 @@ class Database:
         try:
             print('*************** updateFinalAnalysis Start ***************')
             analysis_data['transcription_whisper'] = transcription_whisper
+            for key, value in analysis_data.items():
+                if isinstance(value, (list, dict)):
+                    analysis_data[key] = json.dumps(value)
             # Prepare the SET clause and WHERE clause strings
             data = {
                 'call_summary': analysis_data['call_summary'],
@@ -81,11 +84,11 @@ class Database:
                 'overall_customer_satisfaction_level': analysis_data['overall_customer_satisfaction_level'],
                 'overall_call_time': analysis_data['overall_call_time']
             }
-            set_clause = ', '.join([f"{key} = %s" for key in data.keys()])
+            set_clause = ', '.join([f"{key} = %s" for key in analysis_data.keys()])
             where_clause_str = ' AND '.join([f"{key} = %s" for key in where_clause.keys()])
             query = f"UPDATE call_analysis SET {set_clause} WHERE {where_clause_str}"
             # Combine the values from analysis_data and where_clause
-            values = list(data.values()) + list(where_clause.values())
+            values = list(analysis_data.values()) + list(where_clause.values())
             print('type of transcription_whisper', type(analysis_data['transcription_whisper']))
             print('*************** data', data)
             print('*************** query', query)
