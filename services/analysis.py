@@ -6,7 +6,7 @@ from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 import json
 import uuid
 import re
-from decimal import decimal
+# from decimal import decimal
 from db.db_connection import db
 #Imports END
 
