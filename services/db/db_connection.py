@@ -59,7 +59,7 @@ class Database:
             return json.loads(json_data)
         except Exception as e:
             print('Error in getOneAnalysis :::', e)
-        raise Exception(f"Error in getOneAnalysis: {e}")
+            raise Exception(f"Error in getOneAnalysis: {e}")
 
     def updateFinalAnalysis(self, where_clause, analysis_data, transcription_whisper):
         try:
