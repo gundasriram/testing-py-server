@@ -31,6 +31,7 @@ def init():
                 callAnalysis(file, call)
         db.close()
     except Exception as e:
+        db.close()
         print('Error in callAnalysis init :::', e)
         raise Exception(f"Error in callAnalysis init: {e}")
 
