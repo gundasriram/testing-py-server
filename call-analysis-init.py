@@ -19,6 +19,7 @@ def init():
         print(pending_call_analysis)
         print('*************** Pending Calls END***************')
         for call in pending_call_analysis:
+            print('call', call)
             file = call['s3_file_path']
             call_id = call['call_id']
             print('*************** Started Process for Call_id :::', call_id)
