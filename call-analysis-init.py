@@ -17,6 +17,7 @@ def init():
         pending_call_analysis = db.getAllPendingTask()
         print('*************** Pending Calls START ***************')
         print(pending_call_analysis)
+        print('pending_call_analysis type ::', type(pending_call_analysis))
         print('*************** Pending Calls END***************')
         for call in pending_call_analysis:
             print('type of call', type(call))
