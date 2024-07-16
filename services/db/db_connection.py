@@ -37,12 +37,10 @@ def get_db_connection():
     try:
         print('*************** CONNECTING TO DB ***************')
         return mysql.connector.connect(
-             auth_plugin='mysql_native_password',
-            host="localhost",
-            user="root",
-            password="admin",
-            port=3306,
-            database="world",
+        host='your_host',
+        user='your_user',
+        password='your_password',
+        database='your_database'
         )
     except Exception as e:
         print('Error in connect DB init :::', e)
@@ -51,7 +49,7 @@ def get_db_connection():
 def getAllPendingTask(self):
     try:
         print('*************** getAllPending ***************')
-        query = 'SELECT * from call_analysis where task_status = "PENDING" LIMIT 100'
+        query = 'SELECT id, task_status, call_id, s3_file_path from call_analysis where task_status = "PENDING" LIMIT 100'
         cursor = self.cursor(dictionary=True)
         cursor.execute(query)
         rows = cursor.fetchall()
