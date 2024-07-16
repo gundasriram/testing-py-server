@@ -21,6 +21,7 @@ def init():
         print('*************** Pending Calls END***************')
         # Function to process a single call
         def process_call(call):
+            db.connect()
             print('call', call)
             file = call['s3_file_path']
             call_id = call['call_id']
