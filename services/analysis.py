@@ -187,7 +187,7 @@ def get_prompt(data):
                 Return the results in a JSON array where each object includes the segment id, role, and sentiment.
                     Note:
                         1. Ensure all segments from the conversation are included in the JSON output. (for example if there are 154 segments then the output should have the same number of segments)
-                        2. After identifying role,sentiment of each segment give the analysis in an format a string like segment_id, role, sentiment attached with '-' in between. and push these string into an array. I dont want any objects inside the array it should strictly be a string with segment_is, role and sentiment seperated with '-'.
+                        2. After identifying role,sentiment of each segment give the analysis in an format a string like segment_id, role, sentiment attached with '-' in between. and push these string into an array. I dont want any objects inside the array it should strictly be a string with segment_id, role and sentiment seperated with '-'. (Here these three parameter segment_id, role and sentiment are required and should not be missed for any segment)
             2. Collect Meta Data: Extract any customer meta data such as name, account number, email, or if any other meta data provided during the call and include it in the JSON under "customer_meta_data".
             3. Call Summary: Provide a concise summary of the call within the same JSON structure in 'call_summary'.
             4. Call Objective: Identify and include the main objective of the call. Add it in the JSON under 'call_objective'
