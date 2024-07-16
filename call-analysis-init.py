@@ -1,11 +1,11 @@
 
 import boto3
-from services.db.db_connection import db
+from services.db.db_connection import get_db_connection, updateTaskStatusforCallId, getOneAnalysis, getAllPendingTask
 from services.analysis import callAnalysis
 import concurrent.futures
 
-def checkTaskStatus(call_id):
-    res = db.getOneAnalysis(call_id)
+def checkTaskStatus(call_id, db):
+    res = getOneAnalysis(db, call_id)
     if res['task_status'] == 'INPROGRESS':
         return False
     else:
@@ -14,24 +14,25 @@ def checkTaskStatus(call_id):
 def init():
     print('*************** CALL ANALYSIS INIT ***************')
     try:
-        db.connect()
-        pending_call_analysis = db.getAllPendingTask()
+        db = get_db_connection()
+        pending_call_analysis = getAllPendingTask(db)
         print('*************** Pending Calls START ***************')
         print(pending_call_analysis)
         print('*************** Pending Calls END***************')
         # Function to process a single call
         def process_call(call):
-            db.connect()
+            db = get_db_connection()
             print('call', call)
             file = call['s3_file_path']
             call_id = call['call_id']
             print('*************** Started Process for Call_id :::', call_id)
-            taskStatus = checkTaskStatus(call_id)
+            taskStatus = checkTaskStatus(call_id, db)
             print('*************** taskStatus :::', taskStatus)
             if taskStatus:
-                db.updateTaskStatusforCallId('INPROGRESS', call_id)
+                updateTaskStatusforCallId(db, 'INPROGRESS', call_id)
                 print('*************** Making Call to CallAnalysis with File and Call data ***************')
-                callAnalysis(file, call)
+                callAnalysis(file, call, db)
+            db.close()
         # Use ThreadPoolExecutor to run calls in parallel
         with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
             # Group pending calls in pairs of two
