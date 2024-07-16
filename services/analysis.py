@@ -7,7 +7,7 @@ import json
 import uuid
 import re
 # from decimal import decimal
-from services.db.db_connection import db
+from services.db.db_connection import updateTaskStatusforCallId, updateFinalAnalysis
 from datetime import datetime
 #Imports END
 
@@ -53,13 +53,13 @@ pipe = pipeline(
 
 
 # Base Function
-def callAnalysis(file, call):
+def callAnalysis(file, call, db):
   try:
     print('*************** callAnalysis Function Started ***************')
     print('*************** Call Analysis file :::', file)
     print('*************** Call Analysis call :::', call)
     local_file_path= getFilesToLocal(file)
-    finalresponse = analysisProcess(local_file_path, call)
+    finalresponse = analysisProcess(local_file_path, call, db)
     print('finalresponse in call analysis', finalresponse)
     print('*************** callAnalysis Function END ***************')
     return finalresponse
@@ -67,7 +67,7 @@ def callAnalysis(file, call):
     print('Error in callAnalysis :::', e)
     raise Exception(f"Error in callAnalysis: {e}")
 
-def analysisProcess(file_path, call):
+def analysisProcess(file_path, call, db):
   try:
     print('*************** Analysis process Started ***************')
     finalAnalysisResponse=[]
@@ -89,7 +89,7 @@ def analysisProcess(file_path, call):
       'updated_segments': json.dumps(updatedSegments),
       'analysis_response': json.loads(updatedCompletionNoEscape)
     }
-    inserToDB(dbRecord, call)
+    inserToDB(dbRecord, call, db)
     finalAnalysisResponse.append(dbRecord)
     print('analysisResponse', analysisResponse)
     print('*************** Analysis process Ended ***************')
@@ -156,13 +156,14 @@ def prompting_with_bedrock(transcription):
     print('Error in prompting_with_bedrock :::', e)
     raise Exception(f"Error in prompting_with_bedrock: {e}")
 
-def inserToDB(dbRecord, call):
+def inserToDB(dbRecord, call, db):
   try:
     print('*************** inserToDB process Started ***************')
-    db.updateTaskStatusforCallId('DONE', call['call_id'])
+    updateTaskStatusforCallId(db, 'DONE', call['call_id'])
     analysis_response = dbRecord['analysis_response']
     analysis_response['processed_timestamp'] = datetime.now()
-    db.updateFinalAnalysis(
+    updateFinalAnalysis(
+      db,
       {'call_id': call['call_id']},
       analysis_response,
       dbRecord['transcription_whisper']
