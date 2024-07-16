@@ -23,7 +23,7 @@ def init():
             file = call['s3_file_path']
             call_id = call['call_id']
             print('*************** Started Process for Call_id :::', call_id)
-            taskStatus = checkTaskStatus(call_id)
+            taskStatus = checkTaskStatus(call_id, db)
             print('*************** taskStatus :::', taskStatus)
             if(taskStatus):
                 updateTaskStatusforCallId(db, 'INPROGRESS', call_id)
