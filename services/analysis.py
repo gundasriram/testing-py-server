@@ -1,4 +1,4 @@
-import datetime
+# import datetime
 import os
 import boto3
 import torch
@@ -8,6 +8,7 @@ import uuid
 import re
 # from decimal import decimal
 from services.db.db_connection import db
+from datetime import datetime
 #Imports END
 
 ############################################ Connections & Config START
@@ -160,6 +161,7 @@ def inserToDB(dbRecord, call):
     print('*************** inserToDB process Started ***************')
     db.updateTaskStatusforCallId('DONE', call['call_id'])
     analysis_response = dbRecord['analysis_response']
+    analysis_response['processed_timestamp'] = datetime.now()
     db.updateFinalAnalysis(
       {'call_id': call['call_id']},
       analysis_response,
