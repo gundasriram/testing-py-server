@@ -12,7 +12,6 @@ def checkTaskStatus(call_id, db):
 def init():
     print('*************** CALL ANALYSIS INIT ***************')
     try:
-        g_call_id = ''
         db = get_db_connection()
         pending_call_analysis = getAllPendingTask(db)
         print('*************** Pending Calls START ***************')
@@ -23,7 +22,6 @@ def init():
                 print('call', call)
                 file = call['s3_file_path']
                 call_id = call['call_id']
-                g_call_id = call_id
                 print('*************** Started Process for Call_id :::', call_id)
                 taskStatus = checkTaskStatus(call_id, db)
                 print('*************** taskStatus :::', taskStatus)
