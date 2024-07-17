@@ -9,12 +9,19 @@ import re
 # from decimal import decimal
 from services.db.db_connection import updateTaskStatusforCallId, updateFinalAnalysis, updateWhisperTimeTaken, promptResponseTimeTaken
 from datetime import datetime
+from botocore.config import Config
 #Imports END
 
 ############################################ Connections & Config START
+bedRockConfig = Config(
+    read_timeout=900,
+    connect_timeout=900,
+    retries={"max_attempts": 0}
+)
 brt = boto3.client(
     service_name='bedrock-runtime', 
-    region_name='us-east-1'
+    region_name='us-east-1',
+    Config=bedRockConfig
     )
 S3_BUCKET= 'genesys-audio-file-dev'
 print('S3_BUCKET', S3_BUCKET)
@@ -188,7 +195,7 @@ def inserToDB(dbRecord, call, db):
 def get_prompt(data):
     prompt =f'''
        My Company name is Astro. I have a call conversation transcript below is the details of task that needs to be done.
-        Below each point describes an key's value in the JSON output in markdown format. 
+        Below each point describes an key's value in the JSON output. 
         Note: DO NOT PASS THE INSTRUCTIONS IN RESPONSE ONLY RETURN THE JSON OBJECT
             1. Identifying Role and Sentiment:
                 How to identify roles 
