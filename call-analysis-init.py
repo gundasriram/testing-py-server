@@ -18,16 +18,21 @@ def init():
         print(pending_call_analysis)
         print('*************** Pending Calls END***************')
         for call in pending_call_analysis:
-            print('call', call)
-            file = call['s3_file_path']
-            call_id = call['call_id']
-            print('*************** Started Process for Call_id :::', call_id)
-            taskStatus = checkTaskStatus(call_id, db)
-            print('*************** taskStatus :::', taskStatus)
-            if(taskStatus):
-                updateTaskStatusforCallId(db, 'INPROGRESS', call_id)
-                print('*************** Making Call to CallAnalysis with File and Call data ***************')
-                callAnalysis(file, call, db)
+            try:
+                print('call', call)
+                file = call['s3_file_path']
+                call_id = call['call_id']
+                print('*************** Started Process for Call_id :::', call_id)
+                taskStatus = checkTaskStatus(call_id, db)
+                print('*************** taskStatus :::', taskStatus)
+                if(taskStatus):
+                    updateTaskStatusforCallId(db, 'INPROGRESS', call_id)
+                    print('*************** Making Call to CallAnalysis with File and Call data ***************')
+                    callAnalysis(file, call, db)
+            except Exception as e:
+                print('Error in loop of pending task for init :::', e)
+                print('Error in loop for call_id', call_id)
+                # raise Exception(f"Error in callAnalysis init: {e}")
         db.close()
     except Exception as e:
         print('Error in callAnalysis init :::', e)
