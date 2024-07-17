@@ -8,30 +8,30 @@ import json
 # MYSQL_PORT= os.environ['MYSQL_PORT']
 # MYSQL_DATABASE= os.environ['MYSQL_DATABASE']
 
-class Database:
-    def __init__(self):
-        self.conn = None
-    def connect(self):
-        try:
-            print('*************** CONNECTING TO DB ***************')
-            if self.conn is None:
-                self.conn = mysql.connector.connect(
-                    auth_plugin='mysql_native_password',
-                    host="localhost",
-                    user="root",
-                    password="admin",
-                    port=3306,
-                    database="world",
-                )
-            return self.conn
-        except Exception as e:
-            print('Error in connect DB init :::', e)
-            raise Exception(f"Error in connect init: {e}")
-    def close(self):
-        if self.conn is not None and self.conn.is_connected():
-            print('*************** CLOSING DB CONNECTION ***************')
-            self.conn.close()
-            self.conn = None
+# class Database:
+#     def __init__(self):
+#         self.conn = None
+#     def connect(self):
+#         try:
+#             print('*************** CONNECTING TO DB ***************')
+#             if self.conn is None:
+#                 self.conn = mysql.connector.connect(
+#                     auth_plugin='mysql_native_password',
+#                     host="localhost",
+#                     user="root",
+#                     password="admin",
+#                     port=3306,
+#                     database="world",
+#                 )
+#             return self.conn
+#         except Exception as e:
+#             print('Error in connect DB init :::', e)
+#             raise Exception(f"Error in connect init: {e}")
+#     def close(self):
+#         if self.conn is not None and self.conn.is_connected():
+#             print('*************** CLOSING DB CONNECTION ***************')
+#             self.conn.close()
+#             self.conn = None
 
 def get_db_connection():
     try:
