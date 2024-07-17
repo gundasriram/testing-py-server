@@ -7,7 +7,7 @@ import json
 import uuid
 import re
 # from decimal import decimal
-from services.db.db_connection import updateTaskStatusforCallId, updateFinalAnalysis, updateWhisperTimeTaken, promptResponseTimeTaken
+from services.db.db_connection import updateTaskStatusforCallId, updateFinalAnalysis, updateWhisperTimeTaken, promptResponseTimeTaken, updateTranscription
 from datetime import datetime
 from botocore.config import Config
 #Imports END
@@ -79,6 +79,7 @@ def analysisProcess(file_path, call, db):
     print('*************** Analysis process Started ***************')
     finalAnalysisResponse=[]
     transcription = process_with_whisper_hugging_face_model(file_path, call['call_id'], db)
+    updateTranscription(db, json.dumps(transcription), call['call_id'])
     segments = transcription['chunks']
     updatedSegments=[]
     for index, segment in enumerate(segments):
