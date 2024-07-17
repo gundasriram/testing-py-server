@@ -4,7 +4,7 @@ from services.analysis import callAnalysis
 
 def checkTaskStatus(call_id, db):
     res = getOneAnalysis(db, call_id)
-    if res['task_status'] == 'INPROGRESS':
+    if res['task_status'] != 'PENDING':
         return False
     else:
         return True
