@@ -37,10 +37,12 @@ def get_db_connection():
     try:
         print('*************** CONNECTING TO DB ***************')
         return mysql.connector.connect(
-        host='your_host',
-        user='your_user',
-        password='your_password',
-        database='your_database'
+                    auth_plugin='mysql_native_password',
+                    host="localhost",
+                    user="root",
+                    password="admin",
+                    port=3306,
+                    database="world",
         )
     except Exception as e:
         print('Error in connect DB init :::', e)
