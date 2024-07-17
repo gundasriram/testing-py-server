@@ -91,40 +91,67 @@ def getOneAnalysis(self, call_id):
         raise Exception(f"Error in getOneAnalysis: {e}")
 
 def updateFinalAnalysis(self, where_clause, analysis_data, transcription_whisper):
-        try:
-            print('*************** updateFinalAnalysis Start ***************')
-            analysis_data['transcription_whisper'] = transcription_whisper
-            for key, value in analysis_data.items():
-                if isinstance(value, (list, dict)):
-                    analysis_data[key] = json.dumps(value)
-            # Prepare the SET clause and WHERE clause strings
-            data = {
-                'call_summary': analysis_data['call_summary'],
-                'call_objective': analysis_data['call_objective'],
-                'product_discussed': analysis_data['product_discussed'],
-                'overall_conversation_rating_for_agents': analysis_data['overall_conversation_rating_for_agents'],
-                'overall_sentiment_of_the_call': analysis_data['overall_sentiment_of_the_call'],
-                'overall_customer_satisfaction_level': analysis_data['overall_customer_satisfaction_level'],
-                'overall_call_time': analysis_data['overall_call_time']
-            }
-            set_clause = ', '.join([f"{key} = %s" for key in analysis_data.keys()])
-            where_clause_str = ' AND '.join([f"{key} = %s" for key in where_clause.keys()])
-            query = f"UPDATE call_analysis SET {set_clause} WHERE {where_clause_str}"
-            # Combine the values from analysis_data and where_clause
-            values = list(analysis_data.values()) + list(where_clause.values())
-            print('type of transcription_whisper', type(analysis_data['transcription_whisper']))
-            print('*************** data', data)
-            print('*************** query', query)
-            print('*************** analysis_data ', analysis_data)
-            print('*************** values', values)
-            cursor = self.cursor()
-            cursor.execute(query, values)
-            self.commit()
-            cursor.close()
-            print('*************** updateFinalAnalysis END ***************')
-        except Exception as e:
-            print('Error in updateFinalAnalysis :::', e)
-            raise Exception(f"Error in updateFinalAnalysis: {e}")
+    try:
+        print('*************** updateFinalAnalysis Start ***************')
+        analysis_data['transcription_whisper'] = transcription_whisper
+        for key, value in analysis_data.items():
+            if isinstance(value, (list, dict)):
+                analysis_data[key] = json.dumps(value)
+        # Prepare the SET clause and WHERE clause strings
+        data = {
+            'call_summary': analysis_data['call_summary'],
+            'call_objective': analysis_data['call_objective'],
+            'product_discussed': analysis_data['product_discussed'],
+            'overall_conversation_rating_for_agents': analysis_data['overall_conversation_rating_for_agents'],
+            'overall_sentiment_of_the_call': analysis_data['overall_sentiment_of_the_call'],
+            'overall_customer_satisfaction_level': analysis_data['overall_customer_satisfaction_level'],
+            'overall_call_time': analysis_data['overall_call_time']
+        }
+        set_clause = ', '.join([f"{key} = %s" for key in analysis_data.keys()])
+        where_clause_str = ' AND '.join([f"{key} = %s" for key in where_clause.keys()])
+        query = f"UPDATE call_analysis SET {set_clause} WHERE {where_clause_str}"
+        # Combine the values from analysis_data and where_clause
+        values = list(analysis_data.values()) + list(where_clause.values())
+        print('type of transcription_whisper', type(analysis_data['transcription_whisper']))
+        print('*************** data', data)
+        print('*************** query', query)
+        print('*************** analysis_data ', analysis_data)
+        print('*************** values', values)
+        cursor = self.cursor()
+        cursor.execute(query, values)
+        self.commit()
+        cursor.close()
+        print('*************** updateFinalAnalysis END ***************')
+    except Exception as e:
+        print('Error in updateFinalAnalysis :::', e)
+        raise Exception(f"Error in updateFinalAnalysis: {e}")
+
+def updateWhisperTimeTaken(self, timeTaken, call_id):
+    try:
+        print('*************** updateTaskStatusforCallId ***************')
+        query = "UPDATE call_analysis SET transcription_timetaken = %s where call_id = %s"
+        print('query', query)
+        cursor = self.cursor(dictionary=True)
+        cursor.execute(query, (timeTaken, call_id))
+        self.commit()
+        cursor.close()
+    except Exception as e:
+        print('Error in updateTaskStatusforCallId :::', e)
+        raise Exception(f"Error in updateTaskStatusforCallId: {e}")
+
+def promptResponseTimeTaken(self, timeTaken, call_id):
+    try:
+        print('*************** updateTaskStatusforCallId ***************')
+        query = "UPDATE call_analysis SET llm_timetaken = %s where call_id = %s"
+        print('query', query)
+        cursor = self.cursor(dictionary=True)
+        cursor.execute(query, (timeTaken, call_id))
+        self.commit()
+        cursor.close()
+    except Exception as e:
+        print('Error in updateTaskStatusforCallId :::', e)
+        raise Exception(f"Error in updateTaskStatusforCallId: {e}")
+
 
 # Singleton instance to be used throughout the application
 # db = Database()
