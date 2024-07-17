@@ -188,7 +188,7 @@ def inserToDB(dbRecord, call, db):
 def get_prompt(data):
     prompt =f'''
        My Company name is Astro. I have a call conversation transcript below is the details of task that needs to be done.
-        Below each point describes an key's value in the JSON output. 
+        Below each point describes an key's value in the JSON output in markdown format. 
         Note: DO NOT PASS THE INSTRUCTIONS IN RESPONSE ONLY RETURN THE JSON OBJECT
             1. Identifying Role and Sentiment:
                 How to identify roles 
