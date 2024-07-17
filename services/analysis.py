@@ -215,18 +215,18 @@ def get_prompt(data):
             3. Call Summary: Provide a concise summary of the call within the same JSON structure in 'call_summary'.
             4. Call Objective: Identify and include the main objective of the call. Add it in the JSON under 'call_objective'
             5. Product Discussion: Identify and include the product being discussed in the call. Use the corresponding term from the list below if it matches, otherwise identify the product/service dicussed in the conversation and give it in product discuccion:
-            Ensure that the product is not marked as N/A if a product is clearly mentioned in the conversation which is related to the below products.
-                Note:
-                if there is not Product discussed but they discussed about any service please provide the service requested for in the product.
-                a. Ultra Setup Box issue
-                b. Ulti Setup Box issue
-                c. Fiber issue
-                d. Fiber Plan
-                e. DTH Issuez
-                f. DTH Plan
-                g. OTT issue
-                h. Mobile Service
-            Add it in the JSON under 'product_discussed'
+              Ensure that the product is not marked as N/A if a product is clearly mentioned in the conversation which is related to the below products.
+                  Note:
+                  if there is not Product discussed but they discussed about any service please provide the service requested for in the product.
+                  a. Ultra Setup Box issue
+                  b. Ulti Setup Box issue
+                  c. Fiber issue
+                  d. Fiber Plan
+                  e. DTH Issuez
+                  f. DTH Plan
+                  g. OTT issue
+                  h. Mobile Service
+              Add it in the JSON under 'product_discussed'
             6. Agent Actions: List the actions taken by the agents to address the customer's issue or request. Add it in the JSON under 'agent_actions'
             7. Overall Conversation Rating for Agents: Provide an overall conversation rating out of 10 for the agent(s) based on their performance. Add it in the JSON under 'overall_conversation_rating_for_agents'
             8. Overall Sentiment of the Call: Provide the overall sentiment of the customer in the call. Add it in the JSON under 'overall_sentiment_of_the_call'
@@ -243,20 +243,22 @@ def get_prompt(data):
             Example of expected JSON output:
                 "segregated_conversations": ["0-IVR-neutral", "1-IVR-positive"]
                 "customer_meta_data":
-                "name": "John Doe",
-                "account_number": "1234567890",
-                "email": "mailto:john.doe@example.com"
+                    "name": "John Doe",
+                    "account_number": "1234567890",
+                    "email": "mailto:john.doe@example.com"
                 "call_summary": "The customer called to report an issue with their product. They were transferred through the IVR system and spoke with an agent.",
                 "call_objective": "Report and resolve an issue with a product.",
                 "product_discussed": "XYZ Product",
                 "agent_actions": [
-                "Verified the customer's account",
-                "Troubleshot the issue",
-                "Processed a replacement order"
-                ],
-                "overall_call_summary": "The call began with an IVR interaction, followed by the customer reporting an issue with XYZ Product to agent_1. After initial troubleshooting, the call was escalated to agent_2, who processed a replacement order for the customer.",
+                    "Verified the customer's account",
+                    "Troubleshot the issue",
+                    "Processed a replacement order"
+                  ],
                 "overall_conversation_rating_for_agents": 8.5,
-                "overall_sentiment_of_the_call": "Neutral"
+                "overall_sentiment_of_the_call": "Neutral",
+                "issue_resolved": true,
+                "called_more_than_once": true,
+                "overall_customer_satisfaction_level": 9
                 "overall_call_time": 30,
                 "individual_call_time": 'agent_1': 30, customer: 40, ivr: 60
     '''
