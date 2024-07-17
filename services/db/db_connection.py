@@ -51,7 +51,7 @@ def get_db_connection():
 def getAllPendingTask(self):
     try:
         print('*************** getAllPending ***************')
-        query = 'SELECT id, task_status, call_id, s3_file_path from call_analysis where task_status = "PENDING" LIMIT 100'
+        query = 'SELECT id, task_status, call_id, s3_file_path from call_analysis where task_status = "PENDING"'
         cursor = self.cursor(dictionary=True)
         cursor.execute(query)
         rows = cursor.fetchall()
@@ -93,7 +93,7 @@ def getOneAnalysis(self, call_id):
 def updateFinalAnalysis(self, where_clause, analysis_data, transcription_whisper):
     try:
         print('*************** updateFinalAnalysis Start ***************')
-        analysis_data['transcription_whisper'] = transcription_whisper
+        # analysis_data['transcription_whisper'] = transcription_whisper
         for key, value in analysis_data.items():
             if isinstance(value, (list, dict)):
                 analysis_data[key] = json.dumps(value)
@@ -141,7 +141,7 @@ def updateWhisperTimeTaken(self, timeTaken, call_id):
 
 def promptResponseTimeTaken(self, timeTaken, call_id):
     try:
-        print('*************** updateTaskStatusforCallId ***************')
+        print('*************** promptResponseTimeTaken ***************')
         query = "UPDATE call_analysis SET llm_timetaken = %s where call_id = %s"
         print('query', query)
         cursor = self.cursor(dictionary=True)
@@ -149,8 +149,21 @@ def promptResponseTimeTaken(self, timeTaken, call_id):
         self.commit()
         cursor.close()
     except Exception as e:
-        print('Error in updateTaskStatusforCallId :::', e)
-        raise Exception(f"Error in updateTaskStatusforCallId: {e}")
+        print('Error in promptResponseTimeTaken :::', e)
+        raise Exception(f"Error in promptResponseTimeTaken: {e}")
+
+def updateTranscription(self, transcription, call_id):
+    try:
+        print('*************** updateTranscription ***************')
+        query = "UPDATE call_analysis SET transcription_whisper = %s where call_id = %s"
+        print('query', query)
+        cursor = self.cursor(dictionary=True)
+        cursor.execute(query, (transcription, call_id))
+        self.commit()
+        cursor.close()
+    except Exception as e:
+        print('Error in updateTranscription :::', e)
+        raise Exception(f"Error in updateTranscription: {e}")
 
 
 # Singleton instance to be used throughout the application
