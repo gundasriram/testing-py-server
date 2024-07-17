@@ -7,7 +7,7 @@ import json
 import uuid
 import re
 # from decimal import decimal
-from services.db.db_connection import updateTaskStatusforCallId, updateFinalAnalysis
+from services.db.db_connection import updateTaskStatusforCallId, updateFinalAnalysis, updateWhisperTimeTaken, promptResponseTimeTaken
 from datetime import datetime
 #Imports END
 
@@ -71,12 +71,12 @@ def analysisProcess(file_path, call, db):
   try:
     print('*************** Analysis process Started ***************')
     finalAnalysisResponse=[]
-    transcription = process_with_whisper_hugging_face_model(file_path)
+    transcription = process_with_whisper_hugging_face_model(file_path, call['call_id'], db)
     segments = transcription['chunks']
     updatedSegments=[]
     for index, segment in enumerate(segments):
         updatedSegments.append({'segment_id':index, 'text':segment['text'], 'timestamp':segment['timestamp']})
-    analysisResponse = prompting_with_bedrock(updatedSegments)
+    analysisResponse = prompting_with_bedrock(updatedSegments, call['call_id'], db)
     completion =  analysisResponse['completion']
     completion_json =  re.search(r'```json(.*?)```', completion, re.DOTALL)
     updatedCompletion = completion_json.group(1).strip()
@@ -124,10 +124,16 @@ def download_from_s3(file_name):
     print('Error in download_from_s3 :::', e)
     raise Exception(f"Error download_from_s3: {e}")
 
-def process_with_whisper_hugging_face_model(file_path):
+def process_with_whisper_hugging_face_model(file_path, call_id, db):
   try:
+    startTime = datetime.now()
     print('*************** Started process_with_whisper_hugging_face_model')
     result = pipe(file_path)
+    endTime = datetime.now()
+    time_difference = endTime - startTime
+    # Get the difference in seconds
+    difference_in_seconds = time_difference.total_seconds()
+    updateWhisperTimeTaken(db, difference_in_seconds, call_id)
     print('RESPONSE:: process_with_whisper_hugging_face_model')
     print('result', result)
     return result
@@ -135,8 +141,9 @@ def process_with_whisper_hugging_face_model(file_path):
     print('Error in process_with_whisper_hugging_face_model :::', e)
     raise Exception(f"Error in process_with_whisper_hugging_face_model: {e}")
 
-def prompting_with_bedrock(transcription):
+def prompting_with_bedrock(transcription, call_id, db):
   try:
+    startTime = datetime.now()
     prompt = get_prompt(transcription)
     claude_prompt = f"Human:{prompt}  Answer in JSON format Assistant:"
     print('Prompt:::', prompt)
@@ -151,6 +158,11 @@ def prompting_with_bedrock(transcription):
     response = brt.invoke_model(body=body, modelId=modelId, accept=accept, contentType=contentType)
     response_body = json.loads(response.get('body').read())
     print('response from AWS Bedrock', response_body)
+    endTime = datetime.now()
+    time_difference = endTime - startTime
+    # Get the difference in seconds
+    difference_in_seconds = time_difference.total_seconds()
+    promptResponseTimeTaken(db, difference_in_seconds, call_id)
     return response_body
   except Exception as e:
     print('Error in prompting_with_bedrock :::', e)
