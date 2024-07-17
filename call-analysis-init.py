@@ -11,8 +11,8 @@ def checkTaskStatus(call_id, db):
 
 def init():
     print('*************** CALL ANALYSIS INIT ***************')
+    db = get_db_connection()
     try:
-        db = get_db_connection()
         pending_call_analysis = getAllPendingTask(db)
         print('*************** Pending Calls START ***************')
         print(pending_call_analysis)
