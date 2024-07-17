@@ -21,7 +21,7 @@ bedRockConfig = Config(
 brt = boto3.client(
     service_name='bedrock-runtime', 
     region_name='us-east-1',
-    Config=bedRockConfig
+    config=bedRockConfig
     )
 S3_BUCKET= 'genesys-audio-file-dev'
 print('S3_BUCKET', S3_BUCKET)
