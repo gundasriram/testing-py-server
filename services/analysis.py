@@ -86,9 +86,9 @@ def analysisProcess(file_path, call, db):
         updatedSegments.append({'segment_id':index, 'text':segment['text'], 'timestamp':segment['timestamp']})
     analysisResponse = prompting_with_bedrock(updatedSegments, call['call_id'], db)
     completion =  analysisResponse['completion']
-    finalAnalysisResponse = getAnalysisFromCompletion(completion)
-    print('finalAnalysisResponse', finalAnalysisResponse)
-    print(type(finalAnalysisResponse))
+    finalcompletion = getAnalysisFromCompletion(completion)
+    print('finalcompletion', finalcompletion)
+    print(type(finalcompletion))
     # completion_json =  re.search(r'```json(.*?)```', completion, re.DOTALL)
     # updatedCompletion = completion_json.group(1).strip()
     # escape_pattern = r'\\[abfnrtv\\]'
@@ -98,7 +98,7 @@ def analysisProcess(file_path, call, db):
     dbRecord = {
       'transcription_whisper': json.dumps(transcription),
       'updated_segments': json.dumps(updatedSegments),
-      'analysis_response': finalAnalysisResponse
+      'analysis_response': finalcompletion
     }
     inserToDB(dbRecord, call, db)
     finalAnalysisResponse.append(dbRecord)
