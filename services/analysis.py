@@ -205,7 +205,7 @@ def getAnalysisFromCompletion(completion):
       escape_pattern = r'\\[abfnrtv\\]'
       updatedCompletionNoEscape = re.sub(escape_pattern, '', updatedCompletion)
       print('updatedCompletionNoEscape', updatedCompletionNoEscape)
-      return json.load(updatedCompletionNoEscape)
+      return json.loads(updatedCompletionNoEscape)
     else:
     # If method 1 fails, fall back to method 2: Using find
       start_idx = completion.find('{')
@@ -230,7 +230,7 @@ def get_prompt(data):
     prompt =f'''
        My Company name is Astro. I have a call conversation transcript below is the details of task that needs to be done.
         Below each point describes an key's value in the JSON output. 
-        Note: DO NOT PASS THE INSTRUCTIONS IN RESPONSE ONLY RETURN THE JSON OBJECT
+        Note: DO NOT PASS THE INSTRUCTIONS OR ANY OTHER TEXT IN RESPONSE ONLY RETURN THE JSON OBJECT
             1. Identifying Role and Sentiment:
                 How to identify roles 
                     IVR Identification: Segments that involve automatic responses, instructions for pressing buttons, and general introductory messages are typically IVR.
