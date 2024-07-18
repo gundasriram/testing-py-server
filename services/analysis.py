@@ -155,10 +155,12 @@ def process_with_whisper_hugging_face_model(file_path, call_id, db):
 
 def prompting_with_bedrock(transcription, call_id, db):
   try:
+    print('*************** Started prompting_with_bedrock')
     startTime = datetime.now()
     prompt = get_prompt(transcription)
     claude_prompt = f"Human:{prompt}  Answer in JSON format Assistant:"
-    print('Prompt:::', prompt)
+    print('*************** GET PROMPT SUCCESSFUL')
+    # print('Prompt:::', prompt)
     body = json.dumps({
         "prompt": claude_prompt,
         "temperature": 0.1,
@@ -175,6 +177,7 @@ def prompting_with_bedrock(transcription, call_id, db):
     # Get the difference in seconds
     difference_in_seconds = time_difference.total_seconds()
     promptResponseTimeTaken(db, difference_in_seconds, call_id)
+    print('*************** END of prompting_with_bedrock')
     return response_body
   except Exception as e:
     print('Error in prompting_with_bedrock :::', e)
