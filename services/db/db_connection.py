@@ -75,13 +75,13 @@ def updateTaskStatusforCallId(self, status, call_id):
         print('Error in updateTaskStatusforCallId :::', e)
         raise Exception(f"Error in updateTaskStatusforCallId: {e}")
 
-def getOneAnalysis(self, call_id):
+def getOneAnalysis(self, call_id, id):
     try:
         print('*************** getOneAnalysis ***************')
-        query = "SELECT * from call_analysis where call_id = %s"
+        query = "SELECT * from call_analysis where call_id = %s and id = %s"
         print('query', query)
         cursor = self.cursor(dictionary=True)
-        cursor.execute(query, (call_id,))
+        cursor.execute(query, (call_id, id,))
         rows = cursor.fetchone()
         json_data = json.dumps(rows, indent=4) 
         cursor.close()
@@ -164,6 +164,19 @@ def updateTranscription(self, transcription, call_id):
     except Exception as e:
         print('Error in updateTranscription :::', e)
         raise Exception(f"Error in updateTranscription: {e}")
+
+def update_llm_raw_response(self, response, call_id):
+    try:
+        print('*************** update_llm_raw_response ***************')
+        query = "UPDATE call_analysis SET llm_raw_response = %s where call_id = %s"
+        print('query', query)
+        cursor = self.cursor(dictionary=True)
+        cursor.execute(query, (response, call_id))
+        self.commit()
+        cursor.close()
+    except Exception as e:
+        print('Error in update_llm_raw_response :::', e)
+        raise Exception(f"Error in update_llm_raw_response: {e}")
 
 
 # Singleton instance to be used throughout the application
