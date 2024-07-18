@@ -86,16 +86,17 @@ def analysisProcess(file_path, call, db):
         updatedSegments.append({'segment_id':index, 'text':segment['text'], 'timestamp':segment['timestamp']})
     analysisResponse = prompting_with_bedrock(updatedSegments, call['call_id'], db)
     completion =  analysisResponse['completion']
+    finalAnalysisResponse = getAnalysisFromCompletion(completion)
     completion_json =  re.search(r'```json(.*?)```', completion, re.DOTALL)
-    updatedCompletion = completion_json.group(1).strip()
-    escape_pattern = r'\\[abfnrtv\\]'
-    updatedCompletionNoEscape = re.sub(escape_pattern, '', updatedCompletion)
-    whisper_dumps = json.dumps(transcription)
-    updated_segments_dumps = json.dumps(updatedSegments)
+    # updatedCompletion = completion_json.group(1).strip()
+    # escape_pattern = r'\\[abfnrtv\\]'
+    # updatedCompletionNoEscape = re.sub(escape_pattern, '', updatedCompletion)
+    # whisper_dumps = json.dumps(transcription)
+    # updated_segments_dumps = json.dumps(updatedSegments)
     dbRecord = {
       'transcription_whisper': json.dumps(transcription),
       'updated_segments': json.dumps(updatedSegments),
-      'analysis_response': json.loads(updatedCompletionNoEscape)
+      'analysis_response': completion_json
     }
     inserToDB(dbRecord, call, db)
     finalAnalysisResponse.append(dbRecord)
@@ -192,6 +193,36 @@ def inserToDB(dbRecord, call, db):
   except Exception as e:
     print('Error inserting analysis to DB:::', e)
     raise Exception(f"Insert failed: {e}")
+
+def getAnalysisFromCompletion(completion):
+  try:
+    print('*************** Completion Extraction process STARTED ***************')
+    completion_json = re.search(r'```json(.*?)```', completion, re.DOTALL)
+    if completion_json:
+      updatedCompletion = completion_json.group(1).strip()
+      escape_pattern = r'\\[abfnrtv\\]'
+      updatedCompletionNoEscape = re.sub(escape_pattern, '', updatedCompletion)
+      print('updatedCompletionNoEscape', updatedCompletionNoEscape)
+      return json.load(updatedCompletionNoEscape)
+    else:
+    # If method 1 fails, fall back to method 2: Using find
+      start_idx = completion.find('{')
+      end_idx = completion.rfind('}') + 1
+      if start_idx != -1 and end_idx != -1:
+          json_string = completion[start_idx:end_idx]
+          try:
+              parsed_data = json.loads(json_string)
+              print('parsed_data', parsed_data)
+              return parsed_data
+              # You can further process parsed_data if needed
+          except json.JSONDecodeError:
+              raise ValueError("Extracted string is not valid JSON")
+      else:
+          raise ValueError("JSON not found in the provided string")
+    print('*************** Completion Extraction process END ***************')
+  except Exception as e:
+    print('Error in getAnalysisFromCompletion :::', e)
+    raise Exception(f"Error in getAnalysisFromCompletion: {e}")
 
 def get_prompt(data):
     prompt =f'''
