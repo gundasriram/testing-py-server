@@ -2,8 +2,8 @@ import boto3
 from services.db.db_connection import get_db_connection, updateTaskStatusforCallId, getOneAnalysis, getAllPendingTask
 from services.analysis import callAnalysis
 
-def checkTaskStatus(call_id, db):
-    res = getOneAnalysis(db, call_id)
+def checkTaskStatus(call_id, db, id):
+    res = getOneAnalysis(db, call_id, id)
     if res['task_status'] != 'PENDING':
         return False
     else:
@@ -22,8 +22,9 @@ def init():
                 print('call', call)
                 file = call['s3_file_path']
                 call_id = call['call_id']
+                id = call['id']
                 print('*************** Started Process for Call_id :::', call_id)
-                taskStatus = checkTaskStatus(call_id, db)
+                taskStatus = checkTaskStatus(call_id, db, id)
                 print('*************** taskStatus :::', taskStatus)
                 if(taskStatus):
                     updateTaskStatusforCallId(db, 'INPROGRESS', call_id)
