@@ -7,7 +7,7 @@ import json
 import uuid
 import re
 # from decimal import decimal
-from services.db.db_connection import updateTaskStatusforCallId, updateFinalAnalysis, updateWhisperTimeTaken, promptResponseTimeTaken, updateTranscription
+from services.db.db_connection import updateTaskStatusforCallId, updateFinalAnalysis, updateWhisperTimeTaken, promptResponseTimeTaken, updateTranscription, update_llm_raw_response
 from datetime import datetime
 from botocore.config import Config
 #Imports END
@@ -86,6 +86,7 @@ def analysisProcess(file_path, call, db):
         updatedSegments.append({'segment_id':index, 'text':segment['text'], 'timestamp':segment['timestamp']})
     analysisResponse = prompting_with_bedrock(updatedSegments, call['call_id'], db)
     completion =  analysisResponse['completion']
+    update_llm_raw_response(db, completion, call['call_id'])
     finalcompletion = getAnalysisFromCompletion(completion)
     print('finalcompletion', finalcompletion)
     print(type(finalcompletion))
