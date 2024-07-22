@@ -163,6 +163,7 @@ def updateToSQS(call_id):
     response = sqs.send_message(
         QueueUrl=SQS_URL,
         MessageBody='{"call_id": "%s"}' % call_id,
+        MessageGroupId='pca'
     )
     print('Response from SQS send_message', response)
     print('*************** Updating to SQS END ***************')
