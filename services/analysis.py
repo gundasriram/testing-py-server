@@ -23,6 +23,8 @@ brt = boto3.client(
     region_name='us-east-1',
     config=bedRockConfig
     )
+sqs = boto3.client('sqs', region_name='ap-southeast-1')
+SQS_URL = 'https://sqs.<your-region>.amazonaws.com/<your-account-id>/MyQueue.fifo'
 S3_BUCKET= 'genesys-audio-file-dev'
 print('S3_BUCKET', S3_BUCKET)
 s3 = boto3.client(
@@ -77,35 +79,37 @@ def callAnalysis(file, call, db):
 def analysisProcess(file_path, call, db):
   try:
     print('*************** Analysis process Started ***************')
-    finalAnalysisResponse=[]
+    # finalAnalysisResponse=[]
     transcription = process_with_whisper_hugging_face_model(file_path, call['call_id'], db)
     updateTranscription(db, json.dumps(transcription), call['call_id'])
-    segments = transcription['chunks']
-    updatedSegments=[]
-    for index, segment in enumerate(segments):
-        updatedSegments.append({'segment_id':index, 'text':segment['text'], 'timestamp':segment['timestamp']})
-    analysisResponse = prompting_with_bedrock(updatedSegments, call['call_id'], db)
-    completion =  analysisResponse['completion']
-    update_llm_raw_response(db, completion, call['call_id'])
-    finalcompletion = getAnalysisFromCompletion(completion)
-    print('finalcompletion', finalcompletion)
-    print(type(finalcompletion))
+    # segments = transcription['chunks']
+    # updatedSegments=[]
+    # for index, segment in enumerate(segments):
+    #     updatedSegments.append({'segment_id':index, 'text':segment['text'], 'timestamp':segment['timestamp']})
+    # analysisResponse = prompting_with_bedrock(updatedSegments, call['call_id'], db)
+    # completion =  analysisResponse['completion']
+    # update_llm_raw_response(db, completion, call['call_id'])
+    # finalcompletion = getAnalysisFromCompletion(completion)
+    # print('finalcompletion', finalcompletion)
+    # print(type(finalcompletion))
     # completion_json =  re.search(r'```json(.*?)```', completion, re.DOTALL)
     # updatedCompletion = completion_json.group(1).strip()
     # escape_pattern = r'\\[abfnrtv\\]'
     # updatedCompletionNoEscape = re.sub(escape_pattern, '', updatedCompletion)
     # whisper_dumps = json.dumps(transcription)
     # updated_segments_dumps = json.dumps(updatedSegments)
-    dbRecord = {
-      'transcription_whisper': json.dumps(transcription),
-      'updated_segments': json.dumps(updatedSegments),
-      'analysis_response': finalcompletion
-    }
-    inserToDB(dbRecord, call, db)
-    finalAnalysisResponse.append(dbRecord)
-    print('analysisResponse', analysisResponse)
+    # dbRecord = {
+    #   'transcription_whisper': json.dumps(transcription),
+    #   # 'updated_segments': json.dumps(updatedSegments),
+    #   # 'analysis_response': finalcompletion
+    # }
+    # inserToDB(dbRecord, call, db)
+    updateToSQS(call['call_id'])
+    updateTaskStatusforCallId(db, 'TRANSCRIPTION_DONE', call['call_id'])
+    # finalAnalysisResponse.append(dbRecord)
+    # print('analysisResponse', analysisResponse)
     print('*************** Analysis process Ended ***************')
-    return finalAnalysisResponse
+    return
   except Exception as e:
     print('Error in analysisProcess :::', e)
     raise Exception(f"Error in analysisProcess: {e}")
@@ -153,52 +157,66 @@ def process_with_whisper_hugging_face_model(file_path, call_id, db):
     print('Error in process_with_whisper_hugging_face_model :::', e)
     raise Exception(f"Error in process_with_whisper_hugging_face_model: {e}")
 
-def prompting_with_bedrock(transcription, call_id, db):
+def updateToSQS(call_id):
   try:
-    print('*************** Started prompting_with_bedrock')
-    startTime = datetime.now()
-    prompt = get_prompt(transcription)
-    claude_prompt = f"Human:{prompt}  Answer in JSON format Assistant:"
-    print('*************** GET PROMPT SUCCESSFUL')
-    # print('Prompt:::', prompt)
-    body = json.dumps({
-        "prompt": claude_prompt,
-        "temperature": 0.1,
-        "max_tokens_to_sample": 4096
-    })
-    modelId = 'anthropic.claude-v2'
-    accept = 'application/json'
-    contentType = 'application/json'
-    response = brt.invoke_model(body=body, modelId=modelId, accept=accept, contentType=contentType)
-    response_body = json.loads(response.get('body').read())
-    print('response from AWS Bedrock', response_body)
-    endTime = datetime.now()
-    time_difference = endTime - startTime
-    # Get the difference in seconds
-    difference_in_seconds = time_difference.total_seconds()
-    promptResponseTimeTaken(db, difference_in_seconds, call_id)
-    print('*************** END of prompting_with_bedrock')
-    return response_body
-  except Exception as e:
-    print('Error in prompting_with_bedrock :::', e)
-    raise Exception(f"Error in prompting_with_bedrock: {e}")
-
-def inserToDB(dbRecord, call, db):
-  try:
-    print('*************** inserToDB process Started ***************')
-    updateTaskStatusforCallId(db, 'DONE', call['call_id'])
-    analysis_response = dbRecord['analysis_response']
-    analysis_response['processed_timestamp'] = datetime.now()
-    updateFinalAnalysis(
-      db,
-      {'call_id': call['call_id']},
-      analysis_response,
-      dbRecord['transcription_whisper']
+    print('*************** Updating to SQS START ***************')
+    response = sqs.send_message(
+        QueueUrl=SQS_URL,
+        MessageBody='{"call_id": "%s"}' % call_id,
     )
-    print('*************** inserToDB process Completed ***************')
+    print('Response from SQS send_message', response)
+    print('*************** Updating to SQS END ***************')
+    return response
   except Exception as e:
-    print('Error inserting analysis to DB:::', e)
-    raise Exception(f"Insert failed: {e}")
+    print('Error in updateToSQS :::', e)
+    raise Exception(f"Error updateToSQS: {e}")
+
+# def prompting_with_bedrock(transcription, call_id, db):
+#   try:
+#     print('*************** Started prompting_with_bedrock')
+#     startTime = datetime.now()
+#     prompt = get_prompt(transcription)
+#     claude_prompt = f"Human:{prompt}  Answer in JSON format Assistant:"
+#     print('*************** GET PROMPT SUCCESSFUL')
+#     # print('Prompt:::', prompt)
+#     body = json.dumps({
+#         "prompt": claude_prompt,
+#         "temperature": 0.1,
+#         "max_tokens_to_sample": 4096
+#     })
+#     modelId = 'anthropic.claude-v2'
+#     accept = 'application/json'
+#     contentType = 'application/json'
+#     response = brt.invoke_model(body=body, modelId=modelId, accept=accept, contentType=contentType)
+#     response_body = json.loads(response.get('body').read())
+#     print('response from AWS Bedrock', response_body)
+#     endTime = datetime.now()
+#     time_difference = endTime - startTime
+#     # Get the difference in seconds
+#     difference_in_seconds = time_difference.total_seconds()
+#     promptResponseTimeTaken(db, difference_in_seconds, call_id)
+#     print('*************** END of prompting_with_bedrock')
+#     return response_body
+#   except Exception as e:
+#     print('Error in prompting_with_bedrock :::', e)
+#     raise Exception(f"Error in prompting_with_bedrock: {e}")
+
+# def inserToDB(dbRecord, call, db):
+#   try:
+#     print('*************** inserToDB process Started ***************')
+#     updateTaskStatusforCallId(db, 'TRANSCRIPTION_DONE', call['call_id'])
+#     analysis_response = dbRecord['analysis_response']
+#     analysis_response['processed_timestamp'] = datetime.now()
+#     updateFinalAnalysis(
+#       db,
+#       {'call_id': call['call_id']},
+#       analysis_response,
+#       dbRecord['transcription_whisper']
+#     )
+#     print('*************** inserToDB process Completed ***************')
+#   except Exception as e:
+#     print('Error inserting analysis to DB:::', e)
+#     raise Exception(f"Insert failed: {e}")
 
 def getAnalysisFromCompletion(completion):
   try:
