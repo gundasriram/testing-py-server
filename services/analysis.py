@@ -24,8 +24,8 @@ brt = boto3.client(
     config=bedRockConfig
     )
 sqs = boto3.client('sqs', region_name='ap-southeast-1')
-SQS_URL = 'https://sqs.<your-region>.amazonaws.com/<your-account-id>/MyQueue.fifo'
-S3_BUCKET= 'genesys-audio-file-dev'
+SQS_URL = os.environ["SQS_URL"]
+S3_BUCKET= os.environ["AUDIO_S3_BUCKET"]
 print('S3_BUCKET', S3_BUCKET)
 s3 = boto3.client(
     's3',
