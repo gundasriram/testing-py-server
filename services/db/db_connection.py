@@ -32,6 +32,7 @@ import json
 #             print('*************** CLOSING DB CONNECTION ***************')
 #             self.conn.close()
 #             self.conn = None
+DB_TABLE = os.environ["DB_TABLE"]
 
 def get_db_connection():
     try:
@@ -51,7 +52,7 @@ def get_db_connection():
 def getAllPendingTask(self):
     try:
         print('*************** getAllPending ***************')
-        query = 'SELECT id, task_status, call_id, s3_file_path from call_analysis where task_status = "PENDING"'
+        query = f'SELECT id, task_status, call_id, s3_file_path from {DB_TABLE} where task_status = "PENDING"'
         cursor = self.cursor(dictionary=True)
         cursor.execute(query)
         rows = cursor.fetchall()
@@ -65,7 +66,7 @@ def getAllPendingTask(self):
 def updateTaskStatusforCallId(self, status, call_id):
     try:
         print('*************** updateTaskStatusforCallId ***************')
-        query = "UPDATE call_analysis SET task_status = %s where call_id = %s"
+        query = f"UPDATE {DB_TABLE} SET task_status = %s where call_id = %s"
         print('query', query)
         cursor = self.cursor(dictionary=True)
         cursor.execute(query, (status, call_id))
@@ -78,7 +79,7 @@ def updateTaskStatusforCallId(self, status, call_id):
 def getOneAnalysis(self, call_id, id):
     try:
         print('*************** getOneAnalysis ***************')
-        query = "SELECT * from call_analysis where call_id = %s and id = %s"
+        query = f"SELECT * from {DB_TABLE} where call_id = %s and id = %s"
         print('query', query)
         cursor = self.cursor(dictionary=True)
         cursor.execute(query, (call_id, id,))
@@ -109,14 +110,10 @@ def updateFinalAnalysis(self, where_clause, analysis_data, transcription_whisper
         }
         set_clause = ', '.join([f"{key} = %s" for key in analysis_data.keys()])
         where_clause_str = ' AND '.join([f"{key} = %s" for key in where_clause.keys()])
-        query = f"UPDATE call_analysis SET {set_clause} WHERE {where_clause_str}"
+        query = f"UPDATE {DB_TABLE} SET {set_clause} WHERE {where_clause_str}"
         # Combine the values from analysis_data and where_clause
         values = list(analysis_data.values()) + list(where_clause.values())
-        # print('type of transcription_whisper', type(analysis_data['transcription_whisper']))
-        print('*************** data', data)
-        print('*************** query', query)
-        print('*************** analysis_data ', analysis_data)
-        print('*************** values', values)
+
         cursor = self.cursor()
         cursor.execute(query, values)
         self.commit()
@@ -129,7 +126,7 @@ def updateFinalAnalysis(self, where_clause, analysis_data, transcription_whisper
 def updateWhisperTimeTaken(self, timeTaken, call_id):
     try:
         print('*************** updateTaskStatusforCallId ***************')
-        query = "UPDATE call_analysis SET transcription_timetaken = %s where call_id = %s"
+        query = f"UPDATE {DB_TABLE} SET transcription_timetaken = %s where call_id = %s"
         print('query', query)
         cursor = self.cursor(dictionary=True)
         cursor.execute(query, (timeTaken, call_id))
@@ -142,7 +139,7 @@ def updateWhisperTimeTaken(self, timeTaken, call_id):
 def promptResponseTimeTaken(self, timeTaken, call_id):
     try:
         print('*************** promptResponseTimeTaken ***************')
-        query = "UPDATE call_analysis SET llm_timetaken = %s where call_id = %s"
+        query = f"UPDATE {DB_TABLE} SET llm_timetaken = %s where call_id = %s"
         print('query', query)
         cursor = self.cursor(dictionary=True)
         cursor.execute(query, (timeTaken, call_id))
@@ -155,7 +152,7 @@ def promptResponseTimeTaken(self, timeTaken, call_id):
 def updateTranscription(self, transcription, call_id):
     try:
         print('*************** updateTranscription ***************')
-        query = "UPDATE call_analysis SET transcription_whisper = %s where call_id = %s"
+        query = f"UPDATE {DB_TABLE} SET transcription_whisper = %s where call_id = %s"
         print('query', query)
         cursor = self.cursor(dictionary=True)
         cursor.execute(query, (transcription, call_id))
@@ -168,7 +165,7 @@ def updateTranscription(self, transcription, call_id):
 def update_llm_raw_response(self, response, call_id):
     try:
         print('*************** update_llm_raw_response ***************')
-        query = "UPDATE call_analysis SET llm_raw_response = %s where call_id = %s"
+        query = f"UPDATE {DB_TABLE} SET llm_raw_response = %s where call_id = %s"
         print('query', query)
         cursor = self.cursor(dictionary=True)
         cursor.execute(query, (response, call_id))
